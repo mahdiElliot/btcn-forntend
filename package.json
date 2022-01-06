@@ -1,0 +1,37 @@
+{
+	"name": "btc-project",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "nuxt-ts",
+		"build": "nuxt-ts build",
+		"start": "nuxt-ts start",
+		"generate": "nuxt-ts generate"
+	},
+	"dependencies": {
+		"@nuxt/typescript-runtime": "^2.0.1",
+		"@nuxtjs/axios": "^5.12.5",
+		"@types/tailwindcss": "^2.2.1",
+		"cookie-universal-nuxt": "^2.1.4",
+		"core-js": "^3.8.2",
+		"dotenv": "^8.2.0",
+		"npm": "^7.15.0",
+		"nuxt": "^2.15.8",
+		"nuxt-svg-loader": "^1.2.0",
+		"tailwindcss-ripple": "^0.5.0",
+		"tailwindcss-rtl": "^0.7.3",
+		"vue-apexcharts": "^1.6.2",
+		"vue-izitoast": "^1.2.1"
+	},
+	"devDependencies": {
+		"@nuxt/types": "^2.14.12",
+		"@nuxt/typescript-build": "^2.0.4",
+		"@nuxtjs/tailwindcss": "^3.4.2",
+		"eslint-config-prettier": "^7.1.0",
+		"eslint-plugin-prettier": "^3.3.1",
+		"fibers": "^5.0.0",
+		"prettier": "^2.2.1",
+		"sass": "^1.32.4",
+		"sass-loader": "^10.1.1"
+	}
+}
