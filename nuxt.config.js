@@ -1,7 +1,7 @@
 const env = require('dotenv').config({ path: './.env' }).parsed || {}
 
 env.BROWSER_BASE_URL = env.BROWSER_BASE_URL || '/api/'
-env.BASE_URL = env.BASE_URL || 'http://localhost:8080/'
+env.BASE_URL = env.BASE_URL || 'http://localhost:8081/api/'
 env.ENABLE_PROXY = env.ENABLE_PROXY || 0
 
 const dev = process.env.NODE_ENV !== 'production'
