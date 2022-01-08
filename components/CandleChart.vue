@@ -11,6 +11,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+
 export default Vue.extend({
 	props: {
 		data: {
@@ -40,7 +41,6 @@ export default Vue.extend({
 	watch: {
 		data() {
             this.series = [{ data: this.data }]
-            console.log(this.series)
 		},
 	},
 	mounted() {
