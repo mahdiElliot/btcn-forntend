@@ -19,7 +19,6 @@ module.exports = {
 		},
 		extend: {
 			colors: {
-				'poll-primary': '#434bdf',
 				primary: '#FF000F',
 				'text-primary-dark': '#263238',
 				'text-secondary-dark': '#455A64',

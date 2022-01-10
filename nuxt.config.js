@@ -41,10 +41,6 @@ export default {
 			src: '~/plugins/toasted.ts',
 			mode: 'client',
 		},
-		{
-			src: '~/plugins/apexchart.ts',
-			mode: 'client',
-		},
 		'~/plugins/axios.ts',
 	],
 

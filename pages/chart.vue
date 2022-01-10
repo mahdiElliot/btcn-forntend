@@ -1,17 +1,14 @@
 <template>
-	<div class="w-full h-full p-12">
-		<!-- <CandleChart :data="data" /> -->
-		<CandleChart2 :candleData="candleData" :sellData="sellData" :buyData="buyData" />
+	<div class="w-full h-full p-6">
+		<CandleChart :candleData="candleData" />
 	</div>
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import CandleChart from '~/components/CandleChart.vue'
-import CandleChart2 from '~/components/CandleChart2.vue'
 export default Vue.extend({
 	components: {
 		CandleChart,
-		CandleChart2,
 	},
 	data() {
 		return {
