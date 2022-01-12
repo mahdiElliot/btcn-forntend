@@ -1,6 +1,6 @@
 <template>
 	<div class="w-full h-full p-6">
-		<CandleChart :candleData="candleData" />
+		<CandleChart :candleData="candleData" :sellData="sellData" :buyData="buyData"/>
 	</div>
 </template>
 <script lang="ts">
