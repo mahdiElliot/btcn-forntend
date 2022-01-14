@@ -2,6 +2,7 @@ import { Plugin } from '@nuxt/types'
 import ApiUrl from '~/config/api-url'
 import RouteUrl from '~/config/route-url'
 import { AxiosError } from 'axios'
+import EN from '~/config/en'
 
 export const toastErrors = (ctx: Vue, e: AxiosError) => {
 	if (!e.response) {
@@ -112,6 +113,7 @@ const myPlugin: Plugin = ({ app }, inject) => {
 	inject('routeUrl', RouteUrl)
 	inject('toastErrors', toastErrors)
 	inject('errorPage', errorPage)
+	inject('en', EN)
 }
 
 export default myPlugin
