@@ -25,6 +25,8 @@ export default Vue.extend({
 			sellSeries: null as any,
 			buySeries: null as any,
 			comparison: false,
+			sellData: [] as any[],
+			buyData: [] as any[],
 		}
 	},
 	props: {
@@ -32,13 +34,9 @@ export default Vue.extend({
 			type: Array,
 			default: () => [],
 		},
-		sellData: {
+		tradeData: {
 			type: Array,
-			default: () => [],
-		},
-		buyData: {
-			type: Array,
-			default: () => [],
+			default: () => [] as any[],
 		},
 		selectedRange: {
 			type: Number,
@@ -56,6 +54,17 @@ export default Vue.extend({
 			}
 			this.candleSeries.data(this.candleData)
 		},
+		initTradeData() {
+			this.sellData = this.tradeData
+				.filter((it) => !it.buy)
+				.map((it) => [new Date(Number(it.timestamp) * 1000), it.price])
+
+			this.buyData = this.tradeData
+				.filter((it) => it.buy)
+				.map((it) => [new Date(Number(it.timestamp) * 1000), it.price])
+			this.initSellData()
+			this.initBuyData()
+		},
 		initSellData() {
 			const table = anychart.data.table()
 			table.addData(this.sellData)
@@ -65,7 +74,7 @@ export default Vue.extend({
 				this.sellSeries = this.chart.plot(0).marker(mapping)
 				this.sellSeries.name('Sell Data')
 				this.sellSeries.type('circle')
-				this.sellSeries.fill('#FFFFFF')
+				this.sellSeries.fill('red')
 				this.sellSeries.stroke('#FF000F')
 				this.sellSeries.size(3)
 				this.sellSeries.tooltip().format(function (e: any) {
@@ -99,11 +108,8 @@ export default Vue.extend({
 		candleData() {
 			this.initCandle()
 		},
-		sellData() {
-			this.initSellData()
-		},
-		buyData() {
-			this.initBuyData()
+		tradeData() {
+			this.initTradeData()
 		},
 		comparison() {
 			this.chart
@@ -112,15 +118,12 @@ export default Vue.extend({
 				.comparisonMode(this.comparison ? 'value' : 'none')
 		},
 		selectedRange() {
-			const r1 = this.selectedRange >= 20 ? this.selectedRange - 20 : 0
-			const r2 =
-				this.candleData.length - this.selectedRange >= 21
-					? this.selectedRange + 20
-					: this.candleData.length - 1
-			const arr1: any[] = this.candleData[r1] as any[]
-			const arr2: any[] = this.candleData[r2] as any[]
-
-			this.chart.selectRange(arr1[0] + '', arr2[0] + '')
+			const t1: any = this.tradeData[this.selectedRange]
+			const r = 1000000
+			this.chart.selectRange(
+				new Date(Number(t1.timestamp) * 1000 - r),
+				new Date(Number(t1.timestamp) * 1000 + r)
+			)
 		},
 	},
 	mounted() {
@@ -133,16 +136,10 @@ export default Vue.extend({
 			this.chart.container('candle')
 
 			if (this.candleData.length) this.initCandle()
-			if (this.sellData.length) this.initSellData()
-			if (this.buyData.length) this.initBuyData()
-
-			// const rangePicker = anychart.ui.rangePicker()
-			// const rangeSelector = anychart.ui.rangeSelector()
-			// rangePicker.render(this.chart)
-			// rangeSelector.render(this.chart)
-			// this.chart.interactivity(true)
-			// this.chart.plot(0).yScale().comparisonMode("percent")
-
+			if (this.tradeData.length) this.initTradeData()
+			// this.chart.plot(0).yScale().stackMode('percent')
+			// this.chart.plot(0).yScale().ticks().interval(0.0000001)
+			// this.chart.plot(0).yScale().minorTicks().interval(0.0000001)
 			// draw the chart
 			this.chart.draw()
 		}

@@ -29,12 +29,8 @@ export default Vue.extend({
 			type: Array,
 			default: () => [
 				'timestamp',
-				'open',
-				'close',
-				'low',
-				'high',
-				'volume',
-				'USD_volume',
+				'price',
+				'type',
 			],
 		},
 		data: {

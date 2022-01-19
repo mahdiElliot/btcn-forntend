@@ -2,8 +2,7 @@
 	<div class="w-full h-full p-6 py-12">
 		<CandleChart
 			:candleData="candleData"
-			:sellData="sellData"
-			:buyData="buyData"
+			:tradeData="tradeData"
 			:selectedRange="selectedRange"
 		/>
 		<div class="flex w-full my-4 justify-center items-center">
@@ -59,18 +58,18 @@ export default Vue.extend({
 	data() {
 		return {
 			candleData: [] as any[],
-			sellData: [] as any[],
-			buyData: [] as any[],
+			tradeData: [] as any,
 			tableData: [] as any,
 			total: 0,
 			rowsListNumber: 100,
 			rowsListNumber2: 35,
 			page: 1,
 			selectedRange: 20,
+			tradeClicked: 'buy',
 			loading: true,
-			startDate: '2022-01-12T09:00',
-			endDate: '2022-01-14T06:15',
-			totalTableData: [] as any[]
+			startDate: '2022-01-07T09:00',
+			endDate: '2022-01-09T06:15',
+			totalTableData: [] as any[],
 		}
 	},
 	methods: {
@@ -85,7 +84,6 @@ export default Vue.extend({
 				const r2 = await this.$axios.get(
 					this.$apiUrl.fastPaperUrl(startDate, endDate)
 				)
-				this.total = r.data.total
 				this.candleData = (r.data.data as Array<any>).map((it: any) => [
 					new Date(Number(it.timestamp) * 1000),
 					it.open,
@@ -93,33 +91,21 @@ export default Vue.extend({
 					it.low,
 					it.close,
 				])
-				this.totalTableData = r.data.data
-				this.tableData = (r.data.data as Array<any>)
+
+				this.total = r2.data.total
+
+				this.totalTableData = r2.data.data
+				this.tableData = (r2.data.data as Array<any>)
 					.map((it: any) => [
 						new Date(Number(it.timestamp) * 1000),
-						it.open,
-						it.close,
-						it.low,
-						it.high,
-						it.volume.toFixed(4),
-						it.usdvol.toFixed(4),
+						it.price,
+						it.buy ? 'buy' : 'sell',
 					])
 					.slice(
 						this.rowsListNumber * (this.page - 1),
 						this.page * this.rowsListNumber - 1
 					)
-				this.sellData = (r2.data.data as Array<any>)
-					.filter((it) => !it.buy)
-					.map((it) => [
-						new Date(Number(it.timestamp) * 1000),
-						it.price,
-					])
-				this.buyData = (r2.data.data as Array<any>)
-					.filter((it) => it.buy)
-					.map((it) => [
-						new Date(Number(it.timestamp) * 1000),
-						it.price,
-					])
+				this.tradeData = r2.data.data
 			} catch (e: any) {
 				this.$toastErrors(this, e)
 			} finally {
