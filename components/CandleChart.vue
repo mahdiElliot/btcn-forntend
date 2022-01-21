@@ -1,151 +1,126 @@
 <template>
-	<div>
-		<div class="ml-12 my-0 py-0">
-			<input type="checkbox" name="comparison" v-model="comparison" />
-			<label for="comparison">scale</label>
-		</div>
-		<div id="candle" style="height: 800px; width: 100%"></div>
+	<div class="ml-12 my-0 py-0">
+		<div id="stock-container" style="height: 800px; width: 100%"></div>
 	</div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-const anychart = process.client
-	? require('~/assets/js/anychart-core.min.js')
-	: ({} as any)
-const anychartStock = process.client
-	? require('~/assets/js/anychart-stock.min.js')
-	: ({} as any)
+import Vue, { PropOptions } from 'vue'
+import HighStock, { StockChart } from 'highcharts/highstock'
+
+export type Data = {
+	candleData: Array<Array<number>>
+	tradeData: Array<any>
+}
 
 export default Vue.extend({
 	data() {
 		return {
-			chart: null as any,
-			candleSeries: null as any,
-			sellSeries: null as any,
-			buySeries: null as any,
-			comparison: false,
-			sellData: [] as any[],
-			buyData: [] as any[],
+			chart: {} as StockChart,
 		}
 	},
 	props: {
-		candleData: {
-			type: Array,
-			default: () => [],
-		},
-		tradeData: {
-			type: Array,
-			default: () => [] as any[],
-		},
 		selectedRange: {
 			type: Number,
 			default: 0,
 		},
+		data: {
+			type: Object,
+			default: () => ({} as Data),
+		} as PropOptions<Data>,
 	},
 	methods: {
-		initCandle() {
-			if (this.candleSeries === null) {
-				this.candleSeries = this.chart
-					.plot(0)
-					.candlestick(this.candleData)
-				this.candleSeries.name('Candle Data')
-				return
-			}
-			this.candleSeries.data(this.candleData)
-		},
-		initTradeData() {
-			this.sellData = this.tradeData
+		init() {
+			const data = [...this.data.candleData].reverse()
+			const sellData = this.data.tradeData
 				.filter((it) => !it.buy)
-				.map((it) => [new Date(Number(it.timestamp) * 1000), it.price])
+				.map((it) => [Number(it.timestamp) * 1000, it.price])
 
-			this.buyData = this.tradeData
+			const buyData = this.data.tradeData
 				.filter((it) => it.buy)
-				.map((it) => [new Date(Number(it.timestamp) * 1000), it.price])
-			this.initSellData()
-			this.initBuyData()
-		},
-		initSellData() {
-			const table = anychart.data.table()
-			table.addData(this.sellData)
-			const mapping = table.mapAs()
-			mapping.addField('value', 1)
-			if (this.sellSeries === null) {
-				this.sellSeries = this.chart.plot(0).marker(mapping)
-				this.sellSeries.name('Sell Data')
-				this.sellSeries.type('circle')
-				this.sellSeries.fill('red')
-				this.sellSeries.stroke('#FF000F')
-				this.sellSeries.size(3)
-				this.sellSeries.tooltip().format(function (e: any) {
-					return `Sell price: ${e.value || ''}`
-				})
-				return
-			}
-			this.sellSeries.data(mapping)
-		},
-		initBuyData() {
-			const table = anychart.data.table()
-			table.addData(this.buyData)
-			const mapping = table.mapAs()
-			mapping.addField('value', 1)
-			if (this.buySeries === null) {
-				this.buySeries = this.chart.plot(0).marker(mapping)
-				this.buySeries.name('Buy Data')
-				this.buySeries.type('circle')
-				this.buySeries.fill('blue')
-				this.buySeries.stroke('blue')
-				this.buySeries.size(3)
-				this.buySeries.tooltip().format(function (e: any) {
-					return `Buy price: ${e.value || ''}`
-				})
-				return
-			}
-			this.buySeries.data(mapping)
+				.map((it) => [Number(it.timestamp) * 1000, it.price])
+
+			this.chart = HighStock.stockChart('stock-container', {
+				// rangeSelector: {
+				// 	buttons: [
+				// 		{
+				// 			type: 'minute',
+				// 			count: 1000,
+				// 			text: '1min',
+				// 		},
+				// 		{
+				// 			type: 'day',
+				// 			count: 1,
+				// 			text: '1D',
+				// 		},
+				// 		{
+				// 			type: 'all',
+				// 			count: 1,
+				// 			text: 'All',
+				// 		},
+				// 	],
+				// 	selected: 0,
+				// },
+				navigator: {
+					enabled: true,
+				},
+				series: [
+					{
+						type: 'candlestick',
+						name: 'Candlestick',
+						data,
+					},
+					{
+						name: 'sell trade',
+						data: sellData,
+						lineWidth: 0,
+						marker: {
+							enabled: true,
+							radius: 5,
+							fillColor: 'red',
+						},
+						states: {
+							hover: {
+								lineWidthPlus: 0,
+							},
+						},
+					},
+					{
+						name: 'buy trade',
+						data: buyData,
+						lineWidth: 0,
+						marker: {
+							enabled: true,
+							radius: 5,
+							fillColor: 'blue',
+							symbol: 'square',
+						},
+						states: {
+							hover: {
+								lineWidthPlus: 0,
+							},
+						},
+					},
+				] as any[],
+			})
 		},
 	},
 	watch: {
-		candleData() {
-			this.initCandle()
-		},
-		tradeData() {
-			this.initTradeData()
-		},
-		comparison() {
-			this.chart
-				.plot(0)
-				.yScale()
-				.comparisonMode(this.comparison ? 'value' : 'none')
+		data() {
+			this.init()
 		},
 		selectedRange() {
-			const t1: any = this.tradeData[this.selectedRange]
+			const t1: any = this.data.tradeData[this.selectedRange]
 			const r = 1000000
-			this.chart.selectRange(
-				new Date(Number(t1.timestamp) * 1000 - r),
-				new Date(Number(t1.timestamp) * 1000 + r)
+			this.chart.xAxis[0].setExtremes(
+				Number(t1.timestamp) * 1000 - r,
+				Number(t1.timestamp) * 1000 + r
 			)
 		},
 	},
 	mounted() {
-		if (!this.chart) {
-			this.chart = anychart.stock()
-			// set the chart title
-			this.chart.title('Data')
-
-			// set the container id
-			this.chart.container('candle')
-
-			if (this.candleData.length) this.initCandle()
-			if (this.tradeData.length) this.initTradeData()
-			// this.chart.plot(0).yScale().stackMode('percent')
-			// this.chart.plot(0).yScale().ticks().interval(0.0000001)
-			// this.chart.plot(0).yScale().minorTicks().interval(0.0000001)
-			// draw the chart
-			this.chart.draw()
-		}
+		if (this.data && this.data.candleData && this.data.tradeData)
+			this.init()
 	},
 })
 </script>
-
-<style >
-</style>

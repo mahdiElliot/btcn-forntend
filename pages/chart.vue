@@ -1,10 +1,6 @@
 <template>
 	<div class="w-full h-full p-6 py-12">
-		<CandleChart
-			:candleData="candleData"
-			:tradeData="tradeData"
-			:selectedRange="selectedRange"
-		/>
+		<CandleChart :data="data" :selectedRange="selectedRange" />
 		<div class="flex w-full my-4 justify-center items-center">
 			<div>
 				<label for="startdate">{{ $en.start_date() }}:</label>
@@ -57,11 +53,10 @@ export default Vue.extend({
 	},
 	data() {
 		return {
-			candleData: [] as any[],
-			tradeData: [] as any,
+			data: {} as any,
 			tableData: [] as any,
 			total: 0,
-			rowsListNumber: 100,
+			rowsListNumber: 30,
 			rowsListNumber2: 35,
 			page: 1,
 			selectedRange: 20,
@@ -84,18 +79,11 @@ export default Vue.extend({
 				const r2 = await this.$axios.get(
 					this.$apiUrl.fastPaperUrl(startDate, endDate)
 				)
-				this.candleData = (r.data.data as Array<any>).map((it: any) => [
-					new Date(Number(it.timestamp) * 1000),
-					it.open,
-					it.high,
-					it.low,
-					it.close,
-				])
 
 				this.total = r2.data.total
-
 				this.totalTableData = r2.data.data
 				this.tableData = (r2.data.data as Array<any>)
+					.reverse()
 					.map((it: any) => [
 						new Date(Number(it.timestamp) * 1000),
 						it.price,
@@ -105,7 +93,22 @@ export default Vue.extend({
 						this.rowsListNumber * (this.page - 1),
 						this.page * this.rowsListNumber - 1
 					)
-				this.tradeData = r2.data.data
+
+				const tradeData = r2.data.data
+				const candleData = (r.data.data as Array<any>).map(
+					(it: any) => [
+						Number(it.timestamp) * 1000,
+						it.open,
+						it.high,
+						it.low,
+						it.close,
+					]
+				)
+
+				this.data = {
+					candleData,
+					tradeData,
+				}
 			} catch (e: any) {
 				this.$toastErrors(this, e)
 			} finally {
