@@ -199,30 +199,6 @@ export default Vue.extend({
 	mounted() {
 		if (this.data && this.data.candleData && this.data.tradeData)
 			this.init()
-		// fetch('https://demo-live-data.highcharts.com/aapl-ohlcv.json')
-		// 	.then((response) => response.json())
-		// 	.then((data) => {
-		// 		this.chart = HighStock.stockChart('stock-container', {
-		// 		time: {
-		// 			useUTC: false,
-		// 			timezone: 'IR',
-		// 		},
-		// 		xAxis: {
-		// 			endOnTick: false,
-		// 			startOnTick: false,
-		// 		},
-		// 		navigator: {
-		// 			enabled: true,
-		// 		},
-		// 		series: [
-		// 			{
-		// 				type: 'candlestick',
-		// 				name: 'Candlestick',
-		// 				data,
-		// 			},
-		// 		] as any[],
-		// 	})
-		// 	})
 	},
 })
 </script>

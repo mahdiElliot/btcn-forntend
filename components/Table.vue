@@ -2,7 +2,19 @@
 	<table>
 		<thead>
 			<tr>
-				<th v-for="s in heads" :key="s">{{ s }}</th>
+				<th
+					v-for="s in heads"
+					:key="s"
+					@click="sort(s)"
+					class="cursor-pointer relative"
+				>
+					{{ s }}
+					<span
+						v-if="s === sorted"
+						class="absolute right-0 top-0 bottom-0 mr-6 mt-2"
+						>&#x25be;</span
+					>
+				</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -10,7 +22,7 @@
 				class="cursor-pointer"
 				v-for="(t, i) in data"
 				:key="i"
-				@click="$emit('clicked', i)"
+				@click="$emit('clicked', t[0])"
 			>
 				<td v-for="(d, j) in t" :key="j">{{ d }}</td>
 			</tr>
@@ -22,16 +34,20 @@
 import Vue from 'vue'
 export default Vue.extend({
 	data() {
-		return {}
+		return {
+			sorted: 'timestamp',
+		}
+	},
+	methods: {
+		sort(s: string) {
+			this.sorted = s
+			this.$emit('sort', s)
+		},
 	},
 	props: {
 		heads: {
 			type: Array,
-			default: () => [
-				'timestamp',
-				'price',
-				'type',
-			],
+			default: () => ['timestamp', 'price', 'type'],
 		},
 		data: {
 			type: Array,

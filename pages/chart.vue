@@ -34,7 +34,12 @@
 			:eachRowNumbers="rowsListNumber"
 			@paginate="paginate"
 		/>
-		<Table class="mt-6 mx-2" :data="tableData" @clicked="itemClicked" />
+		<Table
+			class="mt-6 mx-2"
+			:data="tableData"
+			@clicked="itemClicked"
+			@sort="sort"
+		/>
 		<Loader v-if="loading" />
 	</div>
 </template>
@@ -54,7 +59,6 @@ export default Vue.extend({
 	data() {
 		return {
 			data: {} as any,
-			tableData: [] as any,
 			total: 0,
 			rowsListNumber: 30,
 			rowsListNumber2: 35,
@@ -64,7 +68,9 @@ export default Vue.extend({
 			loading: true,
 			startDate: '2022-01-07T09:00',
 			endDate: '2022-01-09T06:15',
+			tableData: [] as any,
 			totalTableData: [] as any[],
+			fixedTableData: [] as any[],
 		}
 	},
 	methods: {
@@ -82,11 +88,9 @@ export default Vue.extend({
 
 				this.total = r2.data.total
 
-				this.totalTableData = r2.data.data.reverse().map((it: any) => [
-						new Date(Number(it.timestamp) * 1000),
-						it.price,
-						it.buy ? 'buy' : 'sell',
-					])
+				this.fixedTableData = r2.data.data.reverse()
+
+				this.totalTableData = [...this.fixedTableData]
 
 				this.tableData = (r2.data.data as Array<any>)
 					.map((it: any) => [
@@ -120,7 +124,12 @@ export default Vue.extend({
 				this.loading = false
 			}
 		},
-		itemClicked(i: number) {
+		itemClicked(timestamp: number) {
+			const i =
+				this.fixedTableData.findIndex(
+					(it) => it.timestamp === timestamp
+				) || -1
+			if (i === -1) return
 			this.selectedRange = i + this.rowsListNumber * (this.page - 1)
 			document.body.scrollTop = 0
 			document.documentElement.scrollTop = 0
@@ -128,14 +137,27 @@ export default Vue.extend({
 		paginate(page: number) {
 			this.page = page
 			this.tableData = [
-				...this.totalTableData.slice(
-					this.rowsListNumber * (this.page - 1),
-					this.page * this.rowsListNumber - 1
-				),
+				...this.totalTableData
+					.map((it: any) => [
+						new Date(Number(it.timestamp) * 1000),
+						it.price,
+						it.buy ? 'buy' : 'sell',
+					])
+					.slice(
+						this.rowsListNumber * (this.page - 1),
+						this.page * this.rowsListNumber - 1
+					),
 			]
 		},
 		submitDate() {
 			this.getData()
+		},
+		sort(s: string) {
+			if (s === 'type') s = 'buy'
+			this.totalTableData.sort((a: any, b: any) =>
+				a[s] >= b[s] ? 1 : -1
+			)
+			this.paginate(this.page)
 		},
 	},
 	mounted() {
