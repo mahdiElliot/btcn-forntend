@@ -81,9 +81,14 @@ export default Vue.extend({
 				)
 
 				this.total = r2.data.total
-				this.totalTableData = r2.data.data
+
+				this.totalTableData = r2.data.data.reverse().map((it: any) => [
+						new Date(Number(it.timestamp) * 1000),
+						it.price,
+						it.buy ? 'buy' : 'sell',
+					])
+
 				this.tableData = (r2.data.data as Array<any>)
-					.reverse()
 					.map((it: any) => [
 						new Date(Number(it.timestamp) * 1000),
 						it.price,
@@ -116,7 +121,7 @@ export default Vue.extend({
 			}
 		},
 		itemClicked(i: number) {
-			this.selectedRange = i
+			this.selectedRange = i + this.rowsListNumber * (this.page - 1)
 			document.body.scrollTop = 0
 			document.documentElement.scrollTop = 0
 		},
