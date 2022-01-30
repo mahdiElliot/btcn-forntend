@@ -124,10 +124,10 @@ export default Vue.extend({
 				this.loading = false
 			}
 		},
-		itemClicked(timestamp: number) {
+		itemClicked(timestamp: string) {
 			const i =
 				this.fixedTableData.findIndex(
-					(it) => it.timestamp === timestamp
+					(it) => Number(it.timestamp) * 1000 === Date.parse(timestamp)
 				) || -1
 			if (i === -1) return
 			this.selectedRange = i + this.rowsListNumber * (this.page - 1)
