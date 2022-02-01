@@ -163,6 +163,11 @@ export default Vue.extend({
 	mounted() {
 		this.getData()
 	},
+	head() {
+		return {
+			title: 'big data finance',
+		}
+	},
 })
 </script>
 
