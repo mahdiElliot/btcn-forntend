@@ -1,5 +1,13 @@
 <template>
 	<div class="ml-12 my-0 py-0">
+		<div class="tools-container outline-none">
+			<button
+				class="ml-2 bg-gray-100 p-2 text-sm rounded"
+				@click="disableZoom"
+			>
+				<img src="~/assets/img/icons/ic_hand.png" height="20" width="20">
+			</button>
+		</div>
 		<div id="stock-container" style="height: 800px; width: 100%"></div>
 	</div>
 </template>
@@ -13,6 +21,10 @@ import Annotations from 'highcharts/modules/annotations-advanced'
 import PriceIndicator from 'highcharts/modules/price-indicator'
 import FullScreen from 'highcharts/modules/full-screen'
 import StockTools from 'highcharts/modules/stock-tools'
+//@ts-ignore
+import Heikinashi from 'highcharts/modules/heikinashi'
+//@ts-ignore
+import Hollowcandlestick from 'highcharts/modules/hollowcandlestick'
 import 'highcharts/css/stocktools/gui.css'
 import 'highcharts/css/annotations/popup.css'
 
@@ -40,11 +52,13 @@ export default Vue.extend({
 	methods: {
 		init() {
 			StockTools(HighStock)
+			IndicatorsAll(HighStock)
+			PriceIndicator(HighStock)
 			DragPanes(HighStock)
 			Annotations(HighStock)
-			PriceIndicator(HighStock)
-			IndicatorsAll(HighStock)
 			FullScreen(HighStock)
+			Heikinashi(HighStock)
+			Hollowcandlestick(HighStock)
 			const data = [...this.data.candleData].reverse()
 			const sellData = this.data.tradeData
 				.filter((it) => !it.buy)
@@ -54,128 +68,157 @@ export default Vue.extend({
 				.filter((it) => it.buy)
 				.map((it) => [Number(it.timestamp) * 1000, it.price])
 
-			this.chart = HighStock.stockChart('stock-container', {
-				time: {
-					useUTC: false,
-					timezone: 'IR',
-				},
-				xAxis: {
-					endOnTick: false,
-					startOnTick: false,
-				},
-				yAxis: [
-					{
-						labels: {
-							align: 'left',
+			this.chart = HighStock.stockChart(
+				'stock-container',
+				{
+					navigation: {
+						bindingsClassName: 'tools-container',
+					},
+					time: {
+						useUTC: false,
+						timezone: 'IR',
+					},
+					xAxis: {
+						endOnTick: false,
+						startOnTick: false,
+					},
+					yAxis: [
+						{
+							labels: {
+								align: 'left',
+							},
+							height: '80%',
+							resize: {
+								enabled: true,
+							},
 						},
-						height: '80%',
-						resize: {
+						{
+							labels: {
+								align: 'left',
+							},
+							top: '80%',
+							height: '20%',
+							offset: 0,
+						},
+					],
+					stockTools: {
+						gui: {
 							enabled: true,
 						},
 					},
-					{
-						labels: {
-							align: 'left',
-						},
-						top: '80%',
-						height: '20%',
-						offset: 0,
+					tooltip: {
+						split: true,
 					},
-				],
-				stockTools: {
-					gui: {
+					responsive: {
+						rules: [
+							{
+								condition: {
+									maxWidth: 800,
+								},
+								chartOptions: {
+									rangeSelector: {
+										inputEnabled: false,
+									},
+								},
+							},
+						],
+					},
+					rangeSelector: {
+						buttons: [
+							{
+								type: 'minute',
+								count: 100,
+								text: '1min',
+							},
+							{
+								type: 'minute',
+								count: 1000,
+								text: '5min',
+							},
+							{
+								type: 'minute',
+								count: 2000,
+								text: '10min',
+							},
+							{
+								type: 'minute',
+								count: 10000,
+								text: '15min',
+							},
+							{
+								type: 'all',
+								text: 'All',
+							},
+						],
+						allButtonsEnabled: true,
+						selected: 0,
+					},
+					navigator: {
 						enabled: true,
 					},
-				},
-				tooltip: {
-					split: true,
-				},
-				responsive: {
-					rules: [
+					series: [
 						{
-							condition: {
-								maxWidth: 800,
+							type: 'hollowcandlestick',
+							name: 'Candlestick',
+							id: 'candlestick',
+							data,
+						},
+						{
+							name: 'sell trade',
+							id: 'sell-trade',
+							data: sellData,
+							lineWidth: 0,
+							marker: {
+								enabled: true,
+								radius: 5,
+								fillColor: 'red',
 							},
-							chartOptions: {
-								rangeSelector: {
-									inputEnabled: false,
+							states: {
+								hover: {
+									lineWidthPlus: 0,
 								},
 							},
 						},
-					],
-				},
-				rangeSelector: {
-					buttons: [
 						{
-							type: 'minute',
-							count: 100,
-							text: '1min',
-						},
-						{
-							type: 'minute',
-							count: 1000,
-							text: '5min',
-						},
-						{
-							type: 'minute',
-							count: 2000,
-							text: '10min',
-						},
-						{
-							type: 'minute',
-							count: 10000,
-							text: '15min',
-						},
-						{
-							type: 'all',
-							text: 'All',
-						},
-					],
-					allButtonsEnabled: true,
-					selected: 0,
-				},
-				navigator: {
-					enabled: true,
-				},
-				series: [
-					{
-						type: 'candlestick',
-						name: 'Candlestick',
-						data,
-					},
-					{
-						name: 'sell trade',
-						data: sellData,
-						lineWidth: 0,
-						marker: {
-							enabled: true,
-							radius: 5,
-							fillColor: 'red',
-						},
-						states: {
-							hover: {
-								lineWidthPlus: 0,
+							name: 'buy trade',
+							id: 'buy-trade',
+							data: buyData,
+							lineWidth: 0,
+							marker: {
+								enabled: true,
+								radius: 5,
+								fillColor: 'blue',
+								symbol: 'square',
+							},
+							states: {
+								hover: {
+									lineWidthPlus: 0,
+								},
 							},
 						},
-					},
-					{
-						name: 'buy trade',
-						data: buyData,
-						lineWidth: 0,
-						marker: {
-							enabled: true,
-							radius: 5,
-							fillColor: 'blue',
-							symbol: 'square',
-						},
-						states: {
-							hover: {
-								lineWidthPlus: 0,
-							},
-						},
-					},
-				] as any[],
-			})
+					] as any[],
+				},
+				(chart) => {
+					HighStock.addEvent(
+						chart.container,
+						'wheel',
+						(event: any) => {
+							// if (event.deltaY > 0) {
+							// 	chart.xAxis[0].setExtremes(0, 23)
+							// } else if (event.deltaY < 0) {
+							// 	chart.xAxis[0].setExtremes(5, 10)
+							// }
+							// // prevent page scroll
+							// event.preventDefault && event.preventDefault()
+						}
+					)
+				}
+			)
+		},
+		disableZoom() {
+			if (this.chart.options.chart) {
+				this.chart.options.chart.zoomType = '' as any
+			}
 		},
 	},
 	watch: {

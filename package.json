@@ -11,6 +11,7 @@
 	"dependencies": {
 		"@nuxt/typescript-runtime": "^2.0.1",
 		"@nuxtjs/axios": "^5.12.5",
+		"@types/highcharts": "^7.0.0",
 		"@types/tailwindcss": "^2.2.1",
 		"cookie-universal-nuxt": "^2.1.4",
 		"core-js": "^3.8.2",
