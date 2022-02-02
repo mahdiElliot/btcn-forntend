@@ -5,7 +5,11 @@
 				class="ml-2 bg-gray-100 p-2 text-sm rounded"
 				@click="disableZoom"
 			>
-				<img src="~/assets/img/icons/ic_hand.png" height="20" width="20">
+				<img
+					src="~/assets/img/icons/ic_hand.png"
+					height="20"
+					width="20"
+				/>
 			</button>
 		</div>
 		<div id="stock-container" style="height: 800px; width: 100%"></div>
@@ -107,7 +111,40 @@ export default Vue.extend({
 						},
 					},
 					tooltip: {
-						split: true,
+						shape: 'square',
+						headerShape: 'callout',
+						borderWidth: 0,
+						shadow: false,
+						positioner: function (width, height, point) {
+							let chart = this.chart,
+								position
+
+							if (point.isHeader) {
+								position = {
+									x: Math.max(
+										// Left side limit
+										chart.plotLeft,
+										Math.min(
+											point.plotX +
+												chart.plotLeft -
+												width / 2,
+											// Right side limit
+											chart.chartWidth -
+												width -
+												2
+										)
+									),
+									y: point.plotY,
+								}
+							} else {
+								position = {
+									x: point.series.chart.plotLeft,
+									y: 0 - chart.plotTop,
+								}
+							}
+
+							return position
+						},
 					},
 					responsive: {
 						rules: [
