@@ -209,10 +209,6 @@ th {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
-th {
-	/* overflow-y: hidden; */
-
-}
 tr:nth-child(even) {
 	background-color: #dddddd;
 }
