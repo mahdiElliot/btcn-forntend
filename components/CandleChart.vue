@@ -37,7 +37,7 @@ import rightTri from '~/assets/img/right-triangle.png'
 import leftTri from '~/assets/img/left-triangle.png'
 
 export type Data = {
-	candleData: Array<Array<number>>
+	candleData: Array<any>
 	tradeData: Array<any>
 }
 
@@ -67,76 +67,27 @@ export default Vue.extend({
 			FullScreen(HighStock)
 			Heikinashi(HighStock)
 			Hollowcandlestick(HighStock)
-			const data = [...this.data.candleData].reverse()
-			const sellData = this.data.tradeData
+			let data = [...this.data.candleData]
+			data.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
+			data = data.map((it) => [
+				Number(it.timestamp),
+				it.open,
+				it.high,
+				it.low,
+				it.close,
+			])
+
+			const tdata = [...this.data.tradeData]
+			tdata.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
+			const sellData = tdata
 				.filter((it) => !it.buy)
-				.map((it) => [Number(it.timestamp) * 1000, it.price])
+				.map((it) => [Number(it.timestamp), it.price])
 
-			const buyData = this.data.tradeData
+			const buyData = tdata
 				.filter((it) => it.buy)
-				.map((it) => [Number(it.timestamp) * 1000, it.price])
+				.map((it) => [Number(it.timestamp), it.price])
 
-			// HighStock.SVGRenderer.prototype.symbols.pin = function (
-			// 	x: any,
-			// 	y: any,
-			// 	w: any,
-			// 	h: any,
-			// 	options: any
-			// ) {
-			// 	let anchorX = options && options.anchorX,
-			// 		anchorY = options && options.anchorY,
-			// 		path,
-			// 		labelTopOrBottomY
-
-			// 	if (y > anchorY) {
-			// 		//points up
-			// 		path = [
-			// 			'M',
-			// 			(anchorX || 0) - 5,
-			// 			y,
-			// 			'L',
-			// 			(anchorX || 0) + 5,
-			// 			y,
-			// 			'L',
-			// 			anchorX || 0,
-			// 			y - 5,
-			// 		]
-			// 		labelTopOrBottomY = y
-			// 	} else {
-			// 		//points down
-			// 		path = [
-			// 			'M',
-			// 			(anchorX || 0) - 5,
-			// 			y + h - 5,
-			// 			'L',
-			// 			(anchorX || 0) + 5,
-			// 			y + h - 5,
-			// 			'L',
-			// 			anchorX || 0,
-			// 			y + h,
-			// 		]
-			// 		labelTopOrBottomY = y + h
-			// 	}
-
-			// 	if (anchorX && anchorY) {
-			// 		// if the label is below the anchor, draw the connecting line from the top edge of the label
-			// 		// otherwise start drawing from the bottom edge
-			// 		path.push(
-			// 			'M',
-			// 			anchorX,
-			// 			labelTopOrBottomY,
-			// 			'L',
-			// 			anchorX,
-			// 			anchorY
-			// 		)
-			// 	}
-
-			// 	return path
-			// }
-			// if (HighStock.VMLRenderer) {
-			// 	HighStock.VMLRenderer.prototype.symbols.cross =
-			// 		HighStock.SVGRenderer.prototype.symbols.cross
-			// }
+			
 			this.chart = HighStock.stockChart('stock-container', {
 				chart: {
 					panning: {
@@ -417,7 +368,7 @@ export default Vue.extend({
 						lineWidth: 0,
 						marker: {
 							enabled: true,
-							fillColor: 'red',
+							fillColor: '#8B0000',
 							symbol: `url(${leftTri})`,
 							marginRight: 4,
 							width: 20,
@@ -437,6 +388,7 @@ export default Vue.extend({
 						marker: {
 							enabled: true,
 							fillColor: 'green',
+							color: 'green',
 							symbol: `url(${rightTri})`,
 							width: 20,
 							height: 20,
@@ -480,14 +432,13 @@ export default Vue.extend({
 		selectedRange() {
 			const t1: any = this.data.tradeData[this.selectedRange]
 			const r = 1000000
-			console.log(new Date(Number(t1.timestamp) * 1000))
 			this.chart.xAxis[0].setExtremes(
-				Number(t1.timestamp) * 1000 - r,
-				Number(t1.timestamp) * 1000 + 6 * r
+				Number(t1.timestamp) - r,
+				Number(t1.timestamp) + 6 * r
 			)
 			this.chart.xAxis[0].setExtremes(
-				Number(t1.timestamp) * 1000 - r,
-				Number(t1.timestamp) * 1000 + 2 * r
+				Number(t1.timestamp) - r,
+				Number(t1.timestamp) + 2 * r
 			)
 		},
 	},
