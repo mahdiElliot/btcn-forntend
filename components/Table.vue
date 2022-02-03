@@ -1,12 +1,13 @@
 <template>
 	<div class="block overflow-x-auto">
-		<div class="flex p-4">
+		<div class="flex py-4 flex-wrap">
 			<span v-for="h in allHeaders" :key="h.name" class="ml-4">
 				<CheckBox
 					v-model="h.selected"
 					:label="h.name"
 					:id="h.name"
 					@changed="addRemoveCol"
+					class="my-1"
 				/>
 			</span>
 		</div>
@@ -201,14 +202,17 @@ th {
 	border: 1px solid #dddddd;
 	text-align: left;
 	padding: 0.5rem;
-	overflow-x: hidden;
+	overflow: hidden;
 	-moz-text-overflow: ellipsis;
 	-ms-text-overflow: ellipsis;
 	-o-text-overflow: ellipsis;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
+th {
+	/* overflow-y: hidden; */
 
+}
 tr:nth-child(even) {
 	background-color: #dddddd;
 }
