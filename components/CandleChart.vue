@@ -31,6 +31,10 @@ import Heikinashi from 'highcharts/modules/heikinashi'
 import Hollowcandlestick from 'highcharts/modules/hollowcandlestick'
 import 'highcharts/css/stocktools/gui.css'
 import 'highcharts/css/annotations/popup.css'
+//@ts-ignore
+import rightTri from '~/assets/img/right-triangle.png'
+//@ts-ignore
+import leftTri from '~/assets/img/left-triangle.png'
 
 export type Data = {
 	candleData: Array<Array<number>>
@@ -72,185 +76,396 @@ export default Vue.extend({
 				.filter((it) => it.buy)
 				.map((it) => [Number(it.timestamp) * 1000, it.price])
 
-			this.chart = HighStock.stockChart(
-				'stock-container',
-				{
-					navigation: {
-						bindingsClassName: 'tools-container',
+			// HighStock.SVGRenderer.prototype.symbols.pin = function (
+			// 	x: any,
+			// 	y: any,
+			// 	w: any,
+			// 	h: any,
+			// 	options: any
+			// ) {
+			// 	let anchorX = options && options.anchorX,
+			// 		anchorY = options && options.anchorY,
+			// 		path,
+			// 		labelTopOrBottomY
+
+			// 	if (y > anchorY) {
+			// 		//points up
+			// 		path = [
+			// 			'M',
+			// 			(anchorX || 0) - 5,
+			// 			y,
+			// 			'L',
+			// 			(anchorX || 0) + 5,
+			// 			y,
+			// 			'L',
+			// 			anchorX || 0,
+			// 			y - 5,
+			// 		]
+			// 		labelTopOrBottomY = y
+			// 	} else {
+			// 		//points down
+			// 		path = [
+			// 			'M',
+			// 			(anchorX || 0) - 5,
+			// 			y + h - 5,
+			// 			'L',
+			// 			(anchorX || 0) + 5,
+			// 			y + h - 5,
+			// 			'L',
+			// 			anchorX || 0,
+			// 			y + h,
+			// 		]
+			// 		labelTopOrBottomY = y + h
+			// 	}
+
+			// 	if (anchorX && anchorY) {
+			// 		// if the label is below the anchor, draw the connecting line from the top edge of the label
+			// 		// otherwise start drawing from the bottom edge
+			// 		path.push(
+			// 			'M',
+			// 			anchorX,
+			// 			labelTopOrBottomY,
+			// 			'L',
+			// 			anchorX,
+			// 			anchorY
+			// 		)
+			// 	}
+
+			// 	return path
+			// }
+			// if (HighStock.VMLRenderer) {
+			// 	HighStock.VMLRenderer.prototype.symbols.cross =
+			// 		HighStock.SVGRenderer.prototype.symbols.cross
+			// }
+			this.chart = HighStock.stockChart('stock-container', {
+				chart: {
+					panning: {
+						enabled: true,
+						type: 'xy',
 					},
-					time: {
-						useUTC: false,
-						timezone: 'IR',
-					},
-					xAxis: {
-						endOnTick: false,
-						startOnTick: false,
-					},
-					yAxis: [
-						{
-							labels: {
-								align: 'left',
-							},
-							height: '80%',
-							resize: {
-								enabled: true,
-							},
+				},
+				navigation: {
+					bindingsClassName: 'tools-container',
+				},
+				time: {
+					useUTC: false,
+					timezone: 'IR',
+				},
+				xAxis: {
+					endOnTick: false,
+					startOnTick: false,
+				},
+				yAxis: [
+					{
+						labels: {
+							align: 'left',
 						},
-						{
-							labels: {
-								align: 'left',
-							},
-							top: '80%',
-							height: '20%',
-							offset: 0,
-						},
-					],
-					stockTools: {
-						gui: {
+						height: '80%',
+						resize: {
 							enabled: true,
 						},
 					},
-					tooltip: {
-						shape: 'square',
-						headerShape: 'callout',
-						borderWidth: 0,
-						shadow: false,
-						positioner: function (width, height, point) {
-							let chart = this.chart,
-								position
-
-							if (point.isHeader) {
-								position = {
-									x: Math.max(
-										// Left side limit
-										chart.plotLeft,
-										Math.min(
-											point.plotX +
-												chart.plotLeft -
-												width / 2,
-											// Right side limit
-											chart.chartWidth -
-												width -
-												2
-										)
-									),
-									y: point.plotY,
-								}
-							} else {
-								position = {
-									x: point.series.chart.plotLeft,
-									y: 0 - chart.plotTop,
-								}
-							}
-
-							return position
+					{
+						labels: {
+							align: 'left',
 						},
+						top: '80%',
+						height: '20%',
+						offset: 0,
 					},
-					responsive: {
-						rules: [
-							{
-								condition: {
-									maxWidth: 800,
-								},
-								chartOptions: {
-									rangeSelector: {
-										inputEnabled: false,
-									},
-								},
-							},
-						],
-					},
-					rangeSelector: {
-						buttons: [
-							{
-								type: 'minute',
-								count: 100,
-								text: '1min',
-							},
-							{
-								type: 'minute',
-								count: 1000,
-								text: '5min',
-							},
-							{
-								type: 'minute',
-								count: 2000,
-								text: '10min',
-							},
-							{
-								type: 'minute',
-								count: 10000,
-								text: '15min',
-							},
-							{
-								type: 'all',
-								text: 'All',
-							},
-						],
-						allButtonsEnabled: true,
-						selected: 0,
-					},
-					navigator: {
+				],
+				stockTools: {
+					gui: {
 						enabled: true,
 					},
-					series: [
-						{
-							type: 'hollowcandlestick',
-							name: 'Candlestick',
-							id: 'candlestick',
-							data,
-						},
-						{
-							name: 'sell trade',
-							id: 'sell-trade',
-							data: sellData,
-							lineWidth: 0,
-							marker: {
-								enabled: true,
-								radius: 5,
-								fillColor: 'red',
-							},
-							states: {
-								hover: {
-									lineWidthPlus: 0,
-								},
-							},
-						},
-						{
-							name: 'buy trade',
-							id: 'buy-trade',
-							data: buyData,
-							lineWidth: 0,
-							marker: {
-								enabled: true,
-								radius: 5,
-								fillColor: 'blue',
-								symbol: 'square',
-							},
-							states: {
-								hover: {
-									lineWidthPlus: 0,
-								},
-							},
-						},
-					] as any[],
 				},
-				(chart) => {
-					HighStock.addEvent(
-						chart.container,
-						'wheel',
-						(event: any) => {
-							// if (event.deltaY > 0) {
-							// 	chart.xAxis[0].setExtremes(0, 23)
-							// } else if (event.deltaY < 0) {
-							// 	chart.xAxis[0].setExtremes(5, 10)
-							// }
-							// // prevent page scroll
-							// event.preventDefault && event.preventDefault()
+				tooltip: {
+					shape: 'square',
+					headerShape: 'callout',
+					borderWidth: 0,
+					shadow: false,
+					positioner: function (width, height, point) {
+						let chart = this.chart,
+							position
+
+						if (point.isHeader) {
+							position = {
+								x: Math.max(
+									// Left side limit
+									chart.plotLeft,
+									Math.min(
+										point.plotX +
+											chart.plotLeft -
+											width / 2,
+										// Right side limit
+										chart.chartWidth - width - 2
+									)
+								),
+								y: point.plotY,
+							}
+						} else {
+							position = {
+								x: point.series.chart.plotLeft,
+								y: 0 - chart.plotTop,
+							}
 						}
-					)
-				}
-			)
+
+						return position
+					},
+				},
+				responsive: {
+					rules: [
+						{
+							condition: {
+								maxWidth: 800,
+							},
+							chartOptions: {
+								rangeSelector: {
+									inputEnabled: false,
+								},
+							},
+						},
+					],
+				},
+				rangeSelector: {
+					buttons: [
+						{
+							type: 'second',
+							// count: 400,
+							text: '1s',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['second', [1]]],
+							},
+						},
+						{
+							type: 'second',
+							// count: 400,
+							text: '5s',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['second', [5]]],
+							},
+						},
+						{
+							type: 'second',
+							// count: 400,
+							text: '15s',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['second', [15]]],
+							},
+						},
+						{
+							type: 'second',
+							// count: 400,
+							text: '30s',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['second', [30]]],
+							},
+						},
+						{
+							type: 'minute',
+							// count: 400,
+							text: '1min',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['minute', [1]]],
+							},
+						},
+						{
+							type: 'minute',
+							// count: 2000,
+							text: '5min',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['minute', [5]]],
+							},
+						},
+						{
+							type: 'minute',
+							// count: 6000,
+							text: '15min',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['minute', [15]]],
+							},
+						},
+						{
+							type: 'minute',
+							count: 1000,
+							text: '30min',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['minute', [30]]],
+							},
+						},
+						{
+							type: 'minute',
+							// count: 18000,
+							text: '45min',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['minute', [45]]],
+							},
+						},
+						{
+							type: 'hour',
+							// count: 30000,
+							text: '1h',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['hour', [1]]],
+							},
+						},
+						{
+							type: 'hour',
+							// count: 50000,
+							text: '2h',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['hour', [2]]],
+							},
+						},
+						{
+							type: 'hour',
+							// count: 70000,
+							text: '3h',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['hour', [3]]],
+							},
+						},
+						{
+							type: 'hour',
+							// count: 90000,
+							text: '4h',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['hour', [4]]],
+							},
+						},
+						{
+							type: 'day',
+							// count: 2000,
+							text: '1d',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['day', [1]]],
+							},
+						},
+						{
+							type: 'week',
+							// count: 200000,
+							text: '1w',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['week', [1]]],
+							},
+						},
+						{
+							type: 'month',
+							// count: 300000,
+							text: '1m',
+							preserveDataGrouping: true,
+							dataGrouping: {
+								forced: true,
+								units: [['month', [1]]],
+							},
+						},
+						{
+							type: 'all',
+							text: 'All',
+						},
+					],
+					allButtonsEnabled: true,
+					selected: 7,
+				},
+				navigator: {
+					enabled: true,
+				},
+				credits: {
+					enabled: false,
+				},
+				series: [
+					{
+						type: 'hollowcandlestick',
+						name: 'Candlestick',
+						id: 'candlestick',
+						data,
+					},
+					{
+						name: 'sell trade',
+						id: 'sell-trade',
+						data: sellData,
+						lineWidth: 0,
+						marker: {
+							enabled: true,
+							fillColor: 'red',
+							symbol: `url(${leftTri})`,
+							marginRight: 4,
+							width: 20,
+							height: 20,
+						},
+						states: {
+							hover: {
+								lineWidthPlus: 0,
+							},
+						},
+					},
+					{
+						name: 'buy trade',
+						id: 'buy-trade',
+						data: buyData,
+						lineWidth: 0,
+						marker: {
+							enabled: true,
+							fillColor: 'green',
+							symbol: `url(${rightTri})`,
+							width: 20,
+							height: 20,
+						},
+						states: {
+							hover: {
+								lineWidthPlus: 0,
+							},
+						},
+					},
+					// {
+					// 	type: 'flags',
+					// 	name: 'buy trade',
+					// 	id: 'buy-trade',
+					// 	data: buyData.map((it) => ({y: it[1], title: ' '})),
+					// 	onSeries: 'candlestick',
+					// 	shape: `url(${rightTri})`,
+					// 	fillColor: 'green',
+					// 	color: 'green',
+					// 	states: {
+					// 		hover: {
+					// 			fillColor: '#000',
+					// 		},
+					// 	},
+					// 	y: 15,
+					// 	width: 16,
+					// },
+				] as any[],
+			})
 		},
 		disableZoom() {
 			if (this.chart.options.chart) {
