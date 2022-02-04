@@ -48,9 +48,9 @@ export default Vue.extend({
 		}
 	},
 	props: {
-		selectedRange: {
+		clickedTimestamp: {
 			type: Number,
-			default: 0,
+			default: 1,
 		},
 		data: {
 			type: Object,
@@ -87,7 +87,6 @@ export default Vue.extend({
 				.filter((it) => it.buy)
 				.map((it) => [Number(it.timestamp), it.price])
 
-			
 			this.chart = HighStock.stockChart('stock-container', {
 				chart: {
 					panning: {
@@ -429,16 +428,11 @@ export default Vue.extend({
 		data() {
 			this.init()
 		},
-		selectedRange() {
-			const t1: any = this.data.tradeData[this.selectedRange]
+		clickedTimestamp() {
 			const r = 1000000
 			this.chart.xAxis[0].setExtremes(
-				Number(t1.timestamp) - r,
-				Number(t1.timestamp) + 6 * r
-			)
-			this.chart.xAxis[0].setExtremes(
-				Number(t1.timestamp) - r,
-				Number(t1.timestamp) + 2 * r
+				this.clickedTimestamp - 4* r,
+				this.clickedTimestamp + 4 * r
 			)
 		},
 	},

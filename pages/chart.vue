@@ -1,6 +1,6 @@
 <template>
 	<div class="w-full h-full p-6 py-12">
-		<CandleChart :data="data" :selectedRange="selectedRange" />
+		<CandleChart :data="data" :clickedTimestamp="clickedTimestamp"/>
 		<div class="flex w-full my-4 justify-center items-center">
 			<div>
 				<label for="startdate">{{ $en.start_date() }}:</label>
@@ -65,7 +65,7 @@ export default Vue.extend({
 			rowsListNumber: 30,
 			rowsListNumber2: 35,
 			page: 1,
-			selectedRange: 20,
+			clickedTimestamp: 1,
 			tradeClicked: 'buy',
 			loading: true,
 			// startDate: '2022-01-07T09:00',
@@ -180,12 +180,7 @@ export default Vue.extend({
 			}
 		},
 		itemClicked(timestamp: string) {
-			const i =
-				this.fixedTableData.findIndex(
-					(it) => Number(it.timestamp) === Date.parse(timestamp)
-				) || -1
-			if (i === -1) return
-			this.selectedRange = i + this.rowsListNumber * (this.page - 1)
+			this.clickedTimestamp = Number(timestamp)
 			document.body.scrollTop = 0
 			document.documentElement.scrollTop = 0
 		},
