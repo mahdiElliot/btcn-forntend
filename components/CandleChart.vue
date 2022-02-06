@@ -457,7 +457,7 @@ export default Vue.extend({
 				.label(
 					text,
 					point.plotX + this.chart.plotLeft,
-					130,
+					point.plotY + this.chart.plotTop,
 					'callout',
 					point.plotX + this.chart.plotLeft,
 					point.plotY + this.chart.plotTop
