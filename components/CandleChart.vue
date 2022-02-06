@@ -96,18 +96,6 @@ export default Vue.extend({
 						type: 'xy',
 					},
 				},
-				plotOptions: {
-					series: {
-						allowPointSelect: true,
-						point: {
-							events: {
-								select: (e) => {
-									console.log(e)
-								},
-							},
-						},
-					},
-				},
 				navigation: {
 					bindingsClassName: 'tools-container',
 				},
@@ -476,6 +464,13 @@ export default Vue.extend({
 					color: '#FFFFFF',
 				})
 				.add()
+
+			setTimeout(() => {
+				//@ts-ignore
+				if (this.chart['lbl'])
+					//@ts-ignore
+					this.chart['lbl'].destroy()
+			}, 10000)
 		},
 	},
 	mounted() {
