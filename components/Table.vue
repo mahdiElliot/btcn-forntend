@@ -6,7 +6,7 @@
 					v-model="h.selected"
 					:label="h.name"
 					:id="h.name"
-					@changed="addRemoveCol"
+					@changed="updateTable"
 					class="my-1"
 				/>
 			</span>
@@ -142,7 +142,7 @@ export default Vue.extend({
 		enableResize() {
 			this.resizableGrid(this.$refs.table)
 		},
-		addRemoveCol(id: string, value: boolean) {
+		updateTable() {
 			// const index = this.heads.findIndex((it) => it === id)
 			// if (value) {
 			// 	this.tData = this.tData.map((it) =>
@@ -168,7 +168,7 @@ export default Vue.extend({
 			}))
 		},
 		data() {
-			this.tData = [...this.data]
+			this.updateTable()
 		},
 	},
 	props: {

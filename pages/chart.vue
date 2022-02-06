@@ -1,6 +1,6 @@
 <template>
 	<div class="w-full h-full p-6 py-12">
-		<CandleChart :data="data" :clickedTimestamp="clickedTimestamp"/>
+		<CandleChart :data="data" :clickedTimestamp="clickedTimestamp" />
 		<div class="flex w-full my-4 justify-center items-center">
 			<div>
 				<label for="startdate">{{ $en.start_date() }}:</label>
@@ -70,8 +70,8 @@ export default Vue.extend({
 			loading: true,
 			// startDate: '2022-01-07T09:00',
 			// endDate: '2022-01-09T06:15',
-			startDate: '2020-04-18T07:00',
-			endDate: '2020-04-19T12:00',
+			startDate: '',
+			endDate: '',
 			tableData: [] as any,
 			totalTableData: [] as any[],
 			fixedTableData: [] as any[],
@@ -127,12 +127,27 @@ export default Vue.extend({
 		async getTradeData() {
 			this.loading = true
 			try {
-				const startDate = Date.parse(this.startDate)
-				const endDate = Date.parse(this.endDate)
+				const startDate =
+					this.startDate === '' ? 0 : Date.parse(this.startDate)
+				const endDate =
+					this.endDate === '' ? 0 : Date.parse(this.endDate)
+
 				const r = await this.$axios.get(
-					this.$apiUrl.tradeUrl(startDate, endDate)
+					!startDate && !endDate
+						? this.$apiUrl.tradeUrl()
+						: this.$apiUrl.tradeUrl(startDate, endDate)
 				)
 				const candleData = r.data.data
+
+				if (!startDate && !endDate && candleData.length) {
+					this.startDate = this.convertTimeToString(
+						candleData[0].timestamp
+					)
+					this.endDate = this.convertTimeToString(
+						candleData[candleData.length - 1].timestamp
+					)
+				}
+
 				const tradeData = (r.data.data as Array<any>)
 					.filter((it) => it.buy || it.sell)
 					.map((it) => ({
@@ -234,6 +249,24 @@ export default Vue.extend({
 				a[s] >= b[s] ? ret : -ret
 			)
 			this.paginate(this.page)
+		},
+		convertTimeToString(timestamp: number) {
+			const date = new Date(timestamp)
+			const month =
+				date.getMonth() + 1 >= 10
+					? `${date.getMonth() + 1}`
+					: `0${date.getMonth() + 1}`
+			const day =
+				date.getDay() >= 10 ? `${date.getDay()}` : `0${date.getDay()}`
+			const hour =
+				date.getHours() >= 10
+					? `${date.getHours()}`
+					: `0${date.getHours()}`
+			const minute =
+				date.getMinutes() >= 10
+					? `${date.getMinutes()}`
+					: `0${date.getMinutes()}`
+			return `${date.getFullYear()}-${month}-${day}T${hour}:${minute}`
 		},
 	},
 	mounted() {

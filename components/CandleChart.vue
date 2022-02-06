@@ -35,6 +35,8 @@ import 'highcharts/css/annotations/popup.css'
 import rightTri from '~/assets/img/right-triangle.png'
 //@ts-ignore
 import leftTri from '~/assets/img/left-triangle.png'
+//@ts-ignore
+import downArr from '~/assets/img/down-arrow.png'
 
 export type Data = {
 	candleData: Array<any>
@@ -402,9 +404,9 @@ export default Vue.extend({
 					// 	type: 'flags',
 					// 	name: 'buy trade',
 					// 	id: 'buy-trade',
-					// 	data: buyData.map((it) => ({y: it[1], title: ' '})),
+					// 	data: buyData.map((it) => ({ x: it[0], title: ' ' })),
 					// 	onSeries: 'candlestick',
-					// 	shape: `url(${rightTri})`,
+					// 	shape: `url(${downArr})`,
 					// 	fillColor: 'green',
 					// 	color: 'green',
 					// 	states: {
@@ -412,8 +414,7 @@ export default Vue.extend({
 					// 			fillColor: '#000',
 					// 		},
 					// 	},
-					// 	y: 15,
-					// 	width: 16,
+					// 	y: -64,
 					// },
 				] as any[],
 			})
@@ -431,9 +432,46 @@ export default Vue.extend({
 		clickedTimestamp() {
 			const r = 1000000
 			this.chart.xAxis[0].setExtremes(
-				this.clickedTimestamp - 4* r,
-				this.clickedTimestamp + 4 * r
+				this.clickedTimestamp - r,
+				this.clickedTimestamp + r
 			)
+			const points = [] as any[]
+			this.chart.series[0].points.forEach((it) => {
+				if (
+					it.x > this.clickedTimestamp - r &&
+					it.x < this.clickedTimestamp + r
+				)
+					points.push(it)
+			})
+			const point = points.length
+				? points[Math.floor(points.length / 2)]
+				: { x: 0, y: 0, plotX: 0 }
+
+			//@ts-ignore
+			const c = this.chart['lbl']
+			const text = `price ${point.y}`
+
+			if (c) c.destroy()
+			//@ts-ignore
+			this.chart['lbl'] = this.chart.renderer
+				.label(
+					text,
+					point.plotX + this.chart.plotLeft,
+					130,
+					'callout',
+					point.plotX + this.chart.plotLeft,
+					point.plotY + this.chart.plotTop
+				)
+				.attr({
+					padding: 10,
+					r: 5,
+					fill: 'rgba(0, 0, 0, 0.75)',
+					zIndex: 5,
+				})
+				.css({
+					color: '#FFFFFF',
+				})
+				.add()
 		},
 	},
 	mounted() {

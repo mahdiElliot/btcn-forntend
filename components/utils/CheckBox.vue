@@ -18,10 +18,6 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
-    // model: {
-    //     prop: 'checked',
-    //     event: 'change'
-    // },
 	props: {
 		value: {
 			type: Boolean,
