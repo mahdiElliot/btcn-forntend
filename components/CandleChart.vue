@@ -96,6 +96,18 @@ export default Vue.extend({
 						type: 'xy',
 					},
 				},
+				plotOptions: {
+					series: {
+						allowPointSelect: true,
+						point: {
+							events: {
+								select: (e) => {
+									console.log(e)
+								},
+							},
+						},
+					},
+				},
 				navigation: {
 					bindingsClassName: 'tools-container',
 				},
@@ -400,22 +412,6 @@ export default Vue.extend({
 							},
 						},
 					},
-					// {
-					// 	type: 'flags',
-					// 	name: 'buy trade',
-					// 	id: 'buy-trade',
-					// 	data: buyData.map((it) => ({ x: it[0], title: ' ' })),
-					// 	onSeries: 'candlestick',
-					// 	shape: `url(${downArr})`,
-					// 	fillColor: 'green',
-					// 	color: 'green',
-					// 	states: {
-					// 		hover: {
-					// 			fillColor: '#000',
-					// 		},
-					// 	},
-					// 	y: -64,
-					// },
 				] as any[],
 			})
 		},
@@ -436,13 +432,21 @@ export default Vue.extend({
 				this.clickedTimestamp + r
 			)
 			const points = [] as any[]
-			this.chart.series[0].points.forEach((it) => {
+			this.chart.series[1].points.forEach((it) => {
 				if (
 					it.x > this.clickedTimestamp - r &&
 					it.x < this.clickedTimestamp + r
 				)
 					points.push(it)
 			})
+			this.chart.series[2].points.forEach((it) => {
+				if (
+					it.x > this.clickedTimestamp - r &&
+					it.x < this.clickedTimestamp + r
+				)
+					points.push(it)
+			})
+			points.sort((a, b) => (a.x >= b.x ? 1 : -1))
 			const point = points.length
 				? points[Math.floor(points.length / 2)]
 				: { x: 0, y: 0, plotX: 0 }
