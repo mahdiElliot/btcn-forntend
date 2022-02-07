@@ -465,12 +465,12 @@ export default Vue.extend({
 				})
 				.add()
 
-			setTimeout(() => {
-				//@ts-ignore
-				if (this.chart['lbl'])
-					//@ts-ignore
-					this.chart['lbl'].destroy()
-			}, 10000)
+			// setTimeout(() => {
+			// 	//@ts-ignore
+			// 	if (this.chart['lbl'])
+			// 		//@ts-ignore
+			// 		this.chart['lbl'].destroy()
+			// }, 10000)
 		},
 	},
 	mounted() {
