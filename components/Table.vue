@@ -24,7 +24,7 @@
 						}}</span>
 						<span
 							v-if="s.name === sorted"
-							@click="sort(s)"
+							@click="sort(s.name)"
 							class="absolute right-0 top-0 bottom-0 mr-5 mt-2"
 						>
 							<span v-if="asc">&#x25be;</span>
@@ -72,6 +72,7 @@ export default Vue.extend({
 	methods: {
 		sort(s: string) {
 			this.sorted === s ? (this.asc = !this.asc) : (this.asc = true)
+			console.log(this.sorted)
 			this.sorted = s
 			this.$emit('sort', s, this.asc)
 		},
