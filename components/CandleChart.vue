@@ -107,6 +107,9 @@ export default Vue.extend({
 					endOnTick: false,
 					startOnTick: false,
 				},
+				boost: {
+					enabled: true
+				},
 				yAxis: [
 					{
 						labels: {

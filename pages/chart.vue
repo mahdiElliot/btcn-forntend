@@ -140,10 +140,10 @@ export default Vue.extend({
 				const candleData = r.data.data
 
 				if (!startDate && !endDate && candleData.length) {
-					this.startDate = this.convertTimeToString(
+					this.endDate = this.convertTimeToString(
 						candleData[0].timestamp
 					)
-					this.endDate = this.convertTimeToString(
+					this.startDate = this.convertTimeToString(
 						candleData[candleData.length - 1].timestamp
 					)
 				}
