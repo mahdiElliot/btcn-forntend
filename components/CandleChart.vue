@@ -1,5 +1,5 @@
 <template>
-	<div class="ml-12 my-0 py-0">
+	<div class="ml-12 my-0 py-0" @click="removeLabel">
 		<div class="tools-container outline-none">
 			<button
 				class="ml-2 bg-gray-100 p-2 text-sm rounded"
@@ -91,10 +91,10 @@ export default Vue.extend({
 
 			this.chart = HighStock.stockChart('stock-container', {
 				chart: {
-					panning: {
-						enabled: true,
-						type: 'xy',
-					},
+					// panning: {
+					// 	enabled: true,
+					// 	type: 'x',
+					// },
 				},
 				navigation: {
 					bindingsClassName: 'tools-container',
@@ -183,7 +183,7 @@ export default Vue.extend({
 					buttons: [
 						{
 							type: 'second',
-							// count: 400,
+							count: 100,
 							text: '1s',
 							preserveDataGrouping: true,
 							dataGrouping: {
@@ -193,7 +193,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'second',
-							// count: 400,
+							count: 1000,
 							text: '5s',
 							preserveDataGrouping: true,
 							dataGrouping: {
@@ -203,7 +203,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'second',
-							// count: 400,
+							count: 2000,
 							text: '15s',
 							preserveDataGrouping: true,
 							dataGrouping: {
@@ -213,7 +213,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'second',
-							// count: 400,
+							count: 2000,
 							text: '30s',
 							preserveDataGrouping: true,
 							dataGrouping: {
@@ -223,7 +223,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'minute',
-							// count: 400,
+							count: 100,
 							text: '1min',
 							preserveDataGrouping: true,
 							dataGrouping: {
@@ -233,7 +233,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'minute',
-							// count: 2000,
+							count: 200,
 							text: '5min',
 							preserveDataGrouping: true,
 							dataGrouping: {
@@ -243,7 +243,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'minute',
-							// count: 6000,
+							count: 400,
 							text: '15min',
 							preserveDataGrouping: true,
 							dataGrouping: {
@@ -408,6 +408,11 @@ export default Vue.extend({
 				this.chart.options.chart.zoomType = '' as any
 			}
 		},
+		removeLabel() {
+			//@ts-ignore
+			const c = this.chart['lbl']
+			if (c && Object.keys(c).length !== 0) c.destroy()
+		},
 	},
 	watch: {
 		data() {
@@ -464,13 +469,6 @@ export default Vue.extend({
 					color: '#FFFFFF',
 				})
 				.add()
-
-			// setTimeout(() => {
-			// 	//@ts-ignore
-			// 	if (this.chart['lbl'])
-			// 		//@ts-ignore
-			// 		this.chart['lbl'].destroy()
-			// }, 10000)
 		},
 	},
 	mounted() {

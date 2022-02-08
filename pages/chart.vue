@@ -170,23 +170,29 @@ export default Vue.extend({
 					}))
 
 				this.totalTableData = [...this.fixedTableData]
-				this.tableHeads = [
-					'timestamp',
-					'open',
-					'high',
-					'low',
-					'close',
-					'volume_btc',
-					'volume_usdt',
-					'slowk',
-					'slowd',
-					'k',
-					'j',
-					'd',
-					'profit',
-					'profit_percent',
-					'type',
-				]
+				// this.tableHeads = [
+				// 	'timestamp',
+				// 	'open',
+				// 	'high',
+				// 	'low',
+				// 	'close',
+				// 	'volume_btc',
+				// 	'volume_usdt',
+				// 	'slowk',
+				// 	'slowd',
+				// 	'k',
+				// 	'j',
+				// 	'd',
+				// 	'profit',
+				// 	'profit_percent',
+				// 	'type',
+				// ]
+				const x = this.totalTableData[0]
+				const ts = Object.keys(x).filter(
+					(it) => it !== 'buy' && it !== 'sell'
+				)
+				ts.push('type')
+				this.tableHeads = ts
 				this.sort('timestamp', true)
 			} catch (e: any) {
 				this.$toastErrors(this, e)
@@ -213,25 +219,41 @@ export default Vue.extend({
 			// 			this.page * this.rowsListNumber - 1
 			// 		),
 			// ]
+			// this.tableData = [
+			// 	...this.totalTableData
+			// 		.map((it: any) => [
+			// 			new Date(it.timestamp),
+			// 			it.open,
+			// 			it.high,
+			// 			it.low,
+			// 			it.close,
+			// 			it.volume_btc,
+			// 			it.volume_usdt,
+			// 			it.slowk,
+			// 			it.slowd,
+			// 			it.k,
+			// 			it.j,
+			// 			it.d,
+			// 			it.profit,
+			// 			it.profit_percent,
+			// 			it.buy ? 'buy' : 'sell',
+			// 		])
+			// 		.slice(
+			// 			this.rowsListNumber * (this.page - 1),
+			// 			this.page * this.rowsListNumber - 1
+			// 		),
+			// ]
 			this.tableData = [
 				...this.totalTableData
-					.map((it: any) => [
-						new Date(it.timestamp),
-						it.open,
-						it.high,
-						it.low,
-						it.close,
-						it.volume_btc,
-						it.volume_usdt,
-						it.slowk,
-						it.slowd,
-						it.k,
-						it.j,
-						it.d,
-						it.profit,
-						it.profit_percent,
-						it.buy ? 'buy' : 'sell',
-					])
+					.map((it: any) => {
+						const temp = { ...it }
+						delete temp['buy']
+						delete temp['sell']
+						const d = Object.values(temp)
+						d[0] = new Date(it.timestamp)
+						d.push(it.buy ? 'buy' : 'sell')
+						return d
+					})
 					.slice(
 						this.rowsListNumber * (this.page - 1),
 						this.page * this.rowsListNumber - 1
@@ -257,7 +279,9 @@ export default Vue.extend({
 					? `${date.getMonth() + 1}`
 					: `0${date.getMonth() + 1}`
 			const day =
-				date.getDay() >= 10 ? `${date.getDay()}` : `0${date.getDay()}`
+				date.getDate() >= 10
+					? `${date.getDate()}`
+					: `0${date.getDate()}`
 			const hour =
 				date.getHours() >= 10
 					? `${date.getHours()}`
