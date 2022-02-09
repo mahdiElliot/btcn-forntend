@@ -4,6 +4,7 @@
 			<button
 				class="ml-2 bg-gray-100 p-2 text-sm rounded"
 				@click="disableZoom"
+				v-if="data.candleData"
 			>
 				<img
 					src="~/assets/img/icons/ic_hand.png"
@@ -35,8 +36,6 @@ import 'highcharts/css/annotations/popup.css'
 import rightTri from '~/assets/img/right-triangle.png'
 //@ts-ignore
 import leftTri from '~/assets/img/left-triangle.png'
-//@ts-ignore
-import downArr from '~/assets/img/down-arrow.png'
 
 export type Data = {
 	candleData: Array<any>
@@ -106,9 +105,6 @@ export default Vue.extend({
 				xAxis: {
 					endOnTick: false,
 					startOnTick: false,
-				},
-				boost: {
-					enabled: true
 				},
 				yAxis: [
 					{
@@ -188,7 +184,7 @@ export default Vue.extend({
 							type: 'second',
 							count: 100,
 							text: '1s',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['second', [1]]],
@@ -198,7 +194,7 @@ export default Vue.extend({
 							type: 'second',
 							count: 1000,
 							text: '5s',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['second', [5]]],
@@ -208,7 +204,7 @@ export default Vue.extend({
 							type: 'second',
 							count: 2000,
 							text: '15s',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['second', [15]]],
@@ -218,7 +214,7 @@ export default Vue.extend({
 							type: 'second',
 							count: 2000,
 							text: '30s',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['second', [30]]],
@@ -228,7 +224,7 @@ export default Vue.extend({
 							type: 'minute',
 							count: 100,
 							text: '1min',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [1]]],
@@ -238,7 +234,7 @@ export default Vue.extend({
 							type: 'minute',
 							count: 200,
 							text: '5min',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [5]]],
@@ -248,7 +244,7 @@ export default Vue.extend({
 							type: 'minute',
 							count: 400,
 							text: '15min',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [15]]],
@@ -258,7 +254,7 @@ export default Vue.extend({
 							type: 'minute',
 							count: 1000,
 							text: '30min',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [30]]],
@@ -268,7 +264,7 @@ export default Vue.extend({
 							type: 'minute',
 							// count: 18000,
 							text: '45min',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [45]]],
@@ -278,7 +274,7 @@ export default Vue.extend({
 							type: 'hour',
 							// count: 30000,
 							text: '1h',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['hour', [1]]],
@@ -288,7 +284,7 @@ export default Vue.extend({
 							type: 'hour',
 							// count: 50000,
 							text: '2h',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['hour', [2]]],
@@ -298,7 +294,7 @@ export default Vue.extend({
 							type: 'hour',
 							// count: 70000,
 							text: '3h',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['hour', [3]]],
@@ -308,7 +304,7 @@ export default Vue.extend({
 							type: 'hour',
 							// count: 90000,
 							text: '4h',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['hour', [4]]],
@@ -318,7 +314,7 @@ export default Vue.extend({
 							type: 'day',
 							// count: 2000,
 							text: '1d',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['day', [1]]],
@@ -328,7 +324,7 @@ export default Vue.extend({
 							type: 'week',
 							// count: 200000,
 							text: '1w',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['week', [1]]],
@@ -338,7 +334,7 @@ export default Vue.extend({
 							type: 'month',
 							// count: 300000,
 							text: '1m',
-							preserveDataGrouping: true,
+							// preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['month', [1]]],
