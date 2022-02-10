@@ -2,7 +2,7 @@
 	<div class="ml-12 my-0 py-0" @click="removeLabel">
 		<div class="tools-container outline-none">
 			<button
-				class="ml-2 bg-gray-100 p-2 text-sm rounded"
+				class="zoom-disable"
 				@click="disableZoom"
 				v-if="data.candleData"
 			>
@@ -14,6 +14,32 @@
 			</button>
 		</div>
 		<div id="stock-container" style="height: 800px; width: 100%"></div>
+		<div v-if="data.candleData" class="ml-2">
+			<div
+				class="ml-2 mb-1 z-2"
+				@click="indicatorsVisible = !indicatorsVisible"
+			>
+				<span class="cursor-pointer p-1 rounded bg-option">
+					{{ indicatorsVisible ? '&#8964;' : '&#8963;' }}
+				</span>
+			</div>
+			<transition name="show-ind">
+				<div v-if="indicatorsVisible" class="mt-1 flex text-xs z-1">
+					<span
+						v-for="i in indicators"
+						:key="i"
+						class="indicator ml-2"
+						:class="[
+							chosenIndicators.includes(i)
+								? 'bg-option-hover'
+								: 'bg-option',
+						]"
+						@click="addIndicator(i)"
+						>{{ i }}</span
+					>
+				</div>
+			</transition>
+		</div>
 	</div>
 </template>
 
@@ -42,10 +68,38 @@ export type Data = {
 	tradeData: Array<any>
 }
 
+const colors = [
+	'blue',
+	'orange',
+	'#e91e63',
+	'#9c27b0',
+	'gray',
+	'black',
+	'#2196f3',
+	'yellow',
+	'red',
+	'#009688',
+	'#4caf50',
+	'#8bc34a',
+	'#cddc39',
+	'#008000',
+	'#ff5722',
+	'#795548',
+	'#ff94cb',
+]
+let iColor = 0
+const getColor = () => {
+	const c = colors[iColor]
+	iColor = (iColor + 1) % colors.length
+	return c
+}
+
 export default Vue.extend({
 	data() {
 		return {
 			chart: {} as StockChart,
+			chosenIndicators: [] as string[],
+			indicatorsVisible: true,
 		}
 	},
 	props: {
@@ -57,6 +111,10 @@ export default Vue.extend({
 			type: Object,
 			default: () => ({} as Data),
 		} as PropOptions<Data>,
+		indicators: {
+			type: Array,
+			default: () => [],
+		} as PropOptions<string[]>,
 	},
 	methods: {
 		init() {
@@ -68,6 +126,7 @@ export default Vue.extend({
 			FullScreen(HighStock)
 			Heikinashi(HighStock)
 			Hollowcandlestick(HighStock)
+
 			let data = [...this.data.candleData]
 			data.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
 			data = data.map((it) => [
@@ -90,10 +149,10 @@ export default Vue.extend({
 
 			this.chart = HighStock.stockChart('stock-container', {
 				chart: {
-					// panning: {
-					// 	enabled: true,
-					// 	type: 'x',
-					// },
+					panning: {
+						enabled: true,
+						type: 'xy',
+					},
 				},
 				navigation: {
 					bindingsClassName: 'tools-container',
@@ -412,6 +471,38 @@ export default Vue.extend({
 			const c = this.chart['lbl']
 			if (c && Object.keys(c).length !== 0) c.destroy()
 		},
+		addIndicator(name: any) {
+			const index = this.chosenIndicators.findIndex((it) => it === name)
+			if (index !== -1) {
+				this.chosenIndicators.splice(index, 1)
+				this.chart.get(name)?.remove()
+				return
+			}
+			this.chosenIndicators.push(name)
+
+			const tdata = [...this.data.tradeData]
+			tdata.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
+			const data = tdata.map((it) => [Number(it.timestamp), it[name]])
+
+			const color = getColor()
+			this.chart.addSeries(
+				{
+					type: 'line',
+					name,
+					id: name,
+					zIndex: 1,
+					color,
+					data,
+					marker: {
+						enabled: true,
+						fillColor: color,
+						color: color,
+						symbol: 'circle',
+					},
+				},
+				true
+			)
+		},
 	},
 	watch: {
 		data() {
@@ -476,3 +567,40 @@ export default Vue.extend({
 	},
 })
 </script>
+
+<style lang="postcss" scoped>
+.bg-option {
+	background: #f7f7f7;
+}
+.bg-option:hover {
+	background: #e2e8f0;
+}
+.bg-option-hover {
+	background: #e2e8f0;
+}
+
+.indicator {
+	@apply p-2 cursor-pointer rounded;
+}
+
+.zoom-disable {
+	@apply ml-2 p-2 text-sm rounded bg-option;
+}
+.zoom-disable:hover {
+	@apply bg-option-hover;
+}
+
+.show-ind-enter,
+.show-ind-leave-active {
+	transform: translateY(-20px);
+	overflow: hidden;
+}
+
+.show-ind-enter-active {
+	transition: all 0.3s ease-in;
+}
+
+.show-ind-leave-active {
+	transition: all 0.3s ease-out;
+}
+</style>

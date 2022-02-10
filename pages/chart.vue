@@ -1,6 +1,10 @@
 <template>
 	<div class="w-full h-full p-6 py-12">
-		<CandleChart :data="data" :clickedTimestamp="clickedTimestamp" />
+		<CandleChart
+			:data="data"
+			:clickedTimestamp="clickedTimestamp"
+			:indicators="indicators"
+		/>
 		<div class="flex w-full my-4 justify-center items-center">
 			<div>
 				<label for="startdate">{{ $en.start_date() }}:</label>
@@ -76,6 +80,7 @@ export default Vue.extend({
 			totalTableData: [] as any[],
 			fixedTableData: [] as any[],
 			tableHeads: ['timestamp', 'price', 'type'] as Array<string>,
+			indicators: [] as string[],
 		}
 	},
 	methods: {
@@ -124,6 +129,42 @@ export default Vue.extend({
 				this.loading = false
 			}
 		},
+		async setTableData(r: any) {
+			this.total = this.data.tradeData.length
+			this.fixedTableData = (r.data.data as Array<any>)
+				.filter((it) => it.buy || it.sell)
+				.map((it) => ({
+					...it,
+					timestamp: Number(it.timestamp),
+					buy: it.buy,
+				}))
+
+			this.totalTableData = [...this.fixedTableData]
+			// this.tableHeads = [
+			// 	'timestamp',
+			// 	'open',
+			// 	'high',
+			// 	'low',
+			// 	'close',
+			// 	'volume_btc',
+			// 	'volume_usdt',
+			// 	'slowk',
+			// 	'slowd',
+			// 	'k',
+			// 	'j',
+			// 	'd',
+			// 	'profit',
+			// 	'profit_percent',
+			// 	'type',
+			// ]
+			const x = this.totalTableData[0]
+			const ts = Object.keys(x).filter(
+				(it) => it !== 'buy' && it !== 'sell'
+			)
+			ts.push('type')
+			this.tableHeads = ts
+			this.sort('timestamp', true)
+		},
 		async getTradeData() {
 			this.loading = true
 			try {
@@ -132,13 +173,37 @@ export default Vue.extend({
 				const endDate =
 					this.endDate === '' ? 0 : Date.parse(this.endDate)
 
+				//get data
 				const r = await this.$axios.get(
 					!startDate && !endDate
 						? this.$apiUrl.tradeUrl()
 						: this.$apiUrl.tradeUrl(startDate, endDate)
 				)
+
+				//set candle and trade chart data
 				const candleData = r.data.data
 
+				const tradeData = (r.data.data as Array<any>)
+					.filter((it) => it.buy || it.sell)
+					.map((it) => ({
+						timestamp: Number(it.timestamp),
+						price: it.open,
+						buy: it.buy,
+						MA_21: it.MA_21,
+						MA_50: it.MA_50,
+						SMMA_21: it.SMMA_21,
+						slowd: it.slowd,
+						slowk: it.slowk,
+						k: it.k,
+						j: it.j,
+						d: it.d,
+					}))
+				this.data = {
+					candleData,
+					tradeData,
+				}
+
+				//set start and end date inputs
 				if (!startDate && !endDate && candleData.length) {
 					this.endDate = this.convertTimeToString(
 						candleData[0].timestamp
@@ -148,52 +213,10 @@ export default Vue.extend({
 					)
 				}
 
-				const tradeData = (r.data.data as Array<any>)
-					.filter((it) => it.buy || it.sell)
-					.map((it) => ({
-						timestamp: Number(it.timestamp),
-						price: it.open,
-						buy: it.buy,
-					}))
-				this.data = {
-					candleData,
-					tradeData,
-				}
+				this.setTableData(r)
 
-				this.total = tradeData.length
-				this.fixedTableData = (r.data.data as Array<any>)
-					.filter((it) => it.buy || it.sell)
-					.map((it) => ({
-						...it,
-						timestamp: Number(it.timestamp),
-						buy: it.buy,
-					}))
-
-				this.totalTableData = [...this.fixedTableData]
-				// this.tableHeads = [
-				// 	'timestamp',
-				// 	'open',
-				// 	'high',
-				// 	'low',
-				// 	'close',
-				// 	'volume_btc',
-				// 	'volume_usdt',
-				// 	'slowk',
-				// 	'slowd',
-				// 	'k',
-				// 	'j',
-				// 	'd',
-				// 	'profit',
-				// 	'profit_percent',
-				// 	'type',
-				// ]
-				const x = this.totalTableData[0]
-				const ts = Object.keys(x).filter(
-					(it) => it !== 'buy' && it !== 'sell'
-				)
-				ts.push('type')
-				this.tableHeads = ts
-				this.sort('timestamp', true)
+				//set indicators for chart
+				this.indicators = ['MA_21', 'MA_50', 'SMMA_21']
 			} catch (e: any) {
 				this.$toastErrors(this, e)
 			} finally {
