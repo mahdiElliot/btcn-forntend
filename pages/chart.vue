@@ -176,8 +176,8 @@ export default Vue.extend({
 				//get data
 				const r = await this.$axios.get(
 					!startDate && !endDate
-						? this.$apiUrl.tradeUrl()
-						: this.$apiUrl.tradeUrl(startDate, endDate)
+						? this.$apiUrl.newTradeUrl()
+						: this.$apiUrl.newTradeUrl(startDate, endDate)
 				)
 
 				//set candle and trade chart data
