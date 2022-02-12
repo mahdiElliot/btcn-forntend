@@ -4,6 +4,7 @@
 			:data="data"
 			:clickedTimestamp="clickedTimestamp"
 			:indicators="indicators"
+			:secondIndicators="secondChartIndicators"
 		/>
 		<div class="flex w-full my-4 justify-center items-center">
 			<div>
@@ -81,6 +82,7 @@ export default Vue.extend({
 			fixedTableData: [] as any[],
 			tableHeads: ['timestamp', 'price', 'type'] as Array<string>,
 			indicators: [] as string[],
+			secondChartIndicators: [] as string[]
 		}
 	},
 	methods: {
@@ -189,14 +191,7 @@ export default Vue.extend({
 						timestamp: Number(it.timestamp),
 						price: it.open,
 						buy: it.buy,
-						MA_21: it.MA_21,
-						MA_50: it.MA_50,
-						SMMA_21: it.SMMA_21,
-						slowd: it.slowd,
-						slowk: it.slowk,
-						k: it.k,
-						j: it.j,
-						d: it.d,
+						...it
 					}))
 				this.data = {
 					candleData,
@@ -216,7 +211,8 @@ export default Vue.extend({
 				this.setTableData(r)
 
 				//set indicators for chart
-				this.indicators = ['MA_21', 'MA_50', 'SMMA_21']
+				this.indicators = ['lower', 'middle', 'upper', 'MA_21', 'MA_50', 'SMMA_21']
+				this.secondChartIndicators = ['k', 'j', 'd']
 			} catch (e: any) {
 				this.$toastErrors(this, e)
 			} finally {
@@ -235,30 +231,6 @@ export default Vue.extend({
 			// 		.map((it: any) => [
 			// 			new Date(it.timestamp),
 			// 			it.price,
-			// 			it.buy ? 'buy' : 'sell',
-			// 		])
-			// 		.slice(
-			// 			this.rowsListNumber * (this.page - 1),
-			// 			this.page * this.rowsListNumber - 1
-			// 		),
-			// ]
-			// this.tableData = [
-			// 	...this.totalTableData
-			// 		.map((it: any) => [
-			// 			new Date(it.timestamp),
-			// 			it.open,
-			// 			it.high,
-			// 			it.low,
-			// 			it.close,
-			// 			it.volume_btc,
-			// 			it.volume_usdt,
-			// 			it.slowk,
-			// 			it.slowd,
-			// 			it.k,
-			// 			it.j,
-			// 			it.d,
-			// 			it.profit,
-			// 			it.profit_percent,
 			// 			it.buy ? 'buy' : 'sell',
 			// 		])
 			// 		.slice(

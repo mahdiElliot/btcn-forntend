@@ -26,7 +26,7 @@
 			<transition name="show-ind">
 				<div v-if="indicatorsVisible" class="mt-1 flex text-xs z-1">
 					<span
-						v-for="i in indicators"
+						v-for="i in allIndicators"
 						:key="i"
 						class="indicator ml-2"
 						:class="[
@@ -115,6 +115,15 @@ export default Vue.extend({
 			type: Array,
 			default: () => [],
 		} as PropOptions<string[]>,
+		secondIndicators: {
+			type: Array,
+			default: () => []
+		} as PropOptions<string[]>,
+	},
+	computed: {
+		allIndicators(): string[]{
+			return [...this.indicators, ...this.secondIndicators]
+		}
 	},
 	methods: {
 		init() {
@@ -151,7 +160,7 @@ export default Vue.extend({
 				chart: {
 					panning: {
 						enabled: true,
-						type: 'xy',
+						type: 'x',
 					},
 				},
 				navigation: {
@@ -405,7 +414,7 @@ export default Vue.extend({
 						},
 					],
 					allButtonsEnabled: true,
-					selected: 7,
+					selected: 6,
 				},
 				navigator: {
 					enabled: true,
@@ -425,6 +434,7 @@ export default Vue.extend({
 						id: 'sell-trade',
 						data: sellData,
 						lineWidth: 0,
+						color: '#8B0000',
 						marker: {
 							enabled: true,
 							fillColor: '#8B0000',
@@ -444,6 +454,7 @@ export default Vue.extend({
 						id: 'buy-trade',
 						data: buyData,
 						lineWidth: 0,
+						color: 'green',
 						marker: {
 							enabled: true,
 							fillColor: 'green',
@@ -499,6 +510,7 @@ export default Vue.extend({
 						color: color,
 						symbol: 'circle',
 					},
+					yAxis: this.secondIndicators.includes(name) ? 1 : 0
 				},
 				true
 			)
