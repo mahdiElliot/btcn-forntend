@@ -330,7 +330,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'minute',
-							// count: 18000,
+							count: 500,
 							text: '45min',
 							// preserveDataGrouping: true,
 							dataGrouping: {
@@ -340,7 +340,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'hour',
-							// count: 30000,
+							count: 50,
 							text: '1h',
 							// preserveDataGrouping: true,
 							dataGrouping: {
@@ -350,7 +350,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'hour',
-							// count: 50000,
+							count: 50,
 							text: '2h',
 							// preserveDataGrouping: true,
 							dataGrouping: {
@@ -360,7 +360,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'hour',
-							// count: 70000,
+							count: 50,
 							text: '3h',
 							// preserveDataGrouping: true,
 							dataGrouping: {
@@ -370,7 +370,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'hour',
-							// count: 90000,
+							count: 50,
 							text: '4h',
 							// preserveDataGrouping: true,
 							dataGrouping: {
@@ -380,7 +380,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'day',
-							// count: 2000,
+							// count: 10,
 							text: '1d',
 							// preserveDataGrouping: true,
 							dataGrouping: {
@@ -390,7 +390,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'week',
-							// count: 200000,
+							// count: 10,
 							text: '1w',
 							// preserveDataGrouping: true,
 							dataGrouping: {
@@ -400,7 +400,7 @@ export default Vue.extend({
 						},
 						{
 							type: 'month',
-							// count: 300000,
+							// count: 10,
 							text: '1m',
 							// preserveDataGrouping: true,
 							dataGrouping: {
