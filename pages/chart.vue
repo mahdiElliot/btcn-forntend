@@ -14,7 +14,7 @@
 					id="meeting-time"
 					name="start-date"
 					v-model="startDate"
-					min="2020-01-01T00:00"
+					min="2018-01-01T00:00"
 				/>
 			</div>
 			<div class="ml-2">
@@ -23,7 +23,7 @@
 					type="datetime-local"
 					name="enddate"
 					v-model="endDate"
-					min="2020-01-01T00:00"
+					min="2018-01-01T00:00"
 				/>
 			</div>
 			<button
