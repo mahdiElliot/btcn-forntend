@@ -1,5 +1,5 @@
 <template>
-	<div class="ml-12 my-0 py-0" @click="removeLabel">
+	<div class="ml-12 my-0 py-0">
 		<div class="tools-container outline-none">
 			<button
 				class="zoom-disable"
@@ -117,13 +117,13 @@ export default Vue.extend({
 		} as PropOptions<string[]>,
 		secondIndicators: {
 			type: Array,
-			default: () => []
+			default: () => [],
 		} as PropOptions<string[]>,
 	},
 	computed: {
-		allIndicators(): string[]{
+		allIndicators(): string[] {
 			return [...this.indicators, ...this.secondIndicators]
-		}
+		},
 	},
 	methods: {
 		init() {
@@ -249,50 +249,10 @@ export default Vue.extend({
 				rangeSelector: {
 					buttons: [
 						{
-							type: 'second',
-							count: 100,
-							text: '1s',
-							// preserveDataGrouping: true,
-							dataGrouping: {
-								forced: true,
-								units: [['second', [1]]],
-							},
-						},
-						{
-							type: 'second',
-							count: 1000,
-							text: '5s',
-							// preserveDataGrouping: true,
-							dataGrouping: {
-								forced: true,
-								units: [['second', [5]]],
-							},
-						},
-						{
-							type: 'second',
-							count: 2000,
-							text: '15s',
-							// preserveDataGrouping: true,
-							dataGrouping: {
-								forced: true,
-								units: [['second', [15]]],
-							},
-						},
-						{
-							type: 'second',
-							count: 2000,
-							text: '30s',
-							// preserveDataGrouping: true,
-							dataGrouping: {
-								forced: true,
-								units: [['second', [30]]],
-							},
-						},
-						{
 							type: 'minute',
 							count: 100,
 							text: '1min',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [1]]],
@@ -302,7 +262,7 @@ export default Vue.extend({
 							type: 'minute',
 							count: 200,
 							text: '5min',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [5]]],
@@ -312,7 +272,7 @@ export default Vue.extend({
 							type: 'minute',
 							count: 400,
 							text: '15min',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [15]]],
@@ -322,7 +282,7 @@ export default Vue.extend({
 							type: 'minute',
 							count: 1000,
 							text: '30min',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [30]]],
@@ -332,7 +292,7 @@ export default Vue.extend({
 							type: 'minute',
 							count: 500,
 							text: '45min',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['minute', [45]]],
@@ -342,7 +302,7 @@ export default Vue.extend({
 							type: 'hour',
 							count: 50,
 							text: '1h',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['hour', [1]]],
@@ -352,7 +312,7 @@ export default Vue.extend({
 							type: 'hour',
 							count: 50,
 							text: '2h',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['hour', [2]]],
@@ -362,7 +322,7 @@ export default Vue.extend({
 							type: 'hour',
 							count: 50,
 							text: '3h',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['hour', [3]]],
@@ -372,7 +332,7 @@ export default Vue.extend({
 							type: 'hour',
 							count: 50,
 							text: '4h',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['hour', [4]]],
@@ -382,7 +342,7 @@ export default Vue.extend({
 							type: 'day',
 							// count: 10,
 							text: '1d',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['day', [1]]],
@@ -392,7 +352,7 @@ export default Vue.extend({
 							type: 'week',
 							// count: 10,
 							text: '1w',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['week', [1]]],
@@ -402,7 +362,7 @@ export default Vue.extend({
 							type: 'month',
 							// count: 10,
 							text: '1m',
-							// preserveDataGrouping: true,
+							preserveDataGrouping: true,
 							dataGrouping: {
 								forced: true,
 								units: [['month', [1]]],
@@ -414,7 +374,7 @@ export default Vue.extend({
 						},
 					],
 					allButtonsEnabled: true,
-					selected: 6,
+					selected: 3,
 				},
 				navigator: {
 					enabled: true,
@@ -477,11 +437,6 @@ export default Vue.extend({
 				this.chart.options.chart.zoomType = '' as any
 			}
 		},
-		removeLabel() {
-			//@ts-ignore
-			const c = this.chart['lbl']
-			if (c && Object.keys(c).length !== 0) c.destroy()
-		},
 		addIndicator(name: any) {
 			const index = this.chosenIndicators.findIndex((it) => it === name)
 			if (index !== -1) {
@@ -510,7 +465,7 @@ export default Vue.extend({
 						color: color,
 						symbol: 'circle',
 					},
-					yAxis: this.secondIndicators.includes(name) ? 1 : 0
+					yAxis: this.secondIndicators.includes(name) ? 1 : 0,
 				},
 				true
 			)
@@ -521,56 +476,31 @@ export default Vue.extend({
 			this.init()
 		},
 		clickedTimestamp() {
-			const r = 1000000
+			const r = 10000000 * 6
 			this.chart.xAxis[0].setExtremes(
 				this.clickedTimestamp - r,
 				this.clickedTimestamp + r
 			)
-			const points = [] as any[]
-			this.chart.series[1].points.forEach((it) => {
-				if (
-					it.x > this.clickedTimestamp - r &&
-					it.x < this.clickedTimestamp + r
-				)
-					points.push(it)
-			})
-			this.chart.series[2].points.forEach((it) => {
-				if (
-					it.x > this.clickedTimestamp - r &&
-					it.x < this.clickedTimestamp + r
-				)
-					points.push(it)
-			})
-			points.sort((a, b) => (a.x >= b.x ? 1 : -1))
-			const point = points.length
-				? points[Math.floor(points.length / 2)]
-				: { x: 0, y: 0, plotX: 0 }
+			
+			if (this.chart.get('flag')) this.chart.get('flag')?.remove()
 
-			//@ts-ignore
-			const c = this.chart['lbl']
-			const text = `price ${point.y}`
-
-			if (c) c.destroy()
-			//@ts-ignore
-			this.chart['lbl'] = this.chart.renderer
-				.label(
-					text,
-					point.plotX + this.chart.plotLeft,
-					point.plotY + this.chart.plotTop,
-					'callout',
-					point.plotX + this.chart.plotLeft,
-					point.plotY + this.chart.plotTop
-				)
-				.attr({
-					padding: 10,
-					r: 5,
-					fill: 'rgba(0, 0, 0, 0.75)',
-					zIndex: 5,
-				})
-				.css({
-					color: '#FFFFFF',
-				})
-				.add()
+			this.chart.addSeries(
+				{
+					type: 'flags',
+					name: 'flag',
+					id: 'flag',
+					zIndex: 1,
+					color: 'black',
+					onSeries: 'candlestick',
+					data: [
+						{
+							x: this.clickedTimestamp,
+							title: `price`
+						},
+					],
+				},
+				true
+			)
 		},
 	},
 	mounted() {
