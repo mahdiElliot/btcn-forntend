@@ -107,6 +107,10 @@ export default Vue.extend({
 			type: Number,
 			default: 1,
 		},
+		clickedTrade: {
+			type: String,
+			default: ''
+		},
 		data: {
 			type: Object,
 			default: () => ({} as Data),
@@ -224,7 +228,7 @@ export default Vue.extend({
 							}
 						} else {
 							position = {
-								x: point.series.chart.plotLeft,
+								x: point.series ? point.series.chart.plotLeft : 0,
 								y: 0 - chart.plotTop,
 							}
 						}
@@ -483,7 +487,8 @@ export default Vue.extend({
 			)
 			
 			if (this.chart.get('flag')) this.chart.get('flag')?.remove()
-
+			
+			
 			this.chart.addSeries(
 				{
 					type: 'flags',
@@ -491,7 +496,7 @@ export default Vue.extend({
 					id: 'flag',
 					zIndex: 1,
 					color: 'black',
-					onSeries: 'candlestick',
+					onSeries: `${this.clickedTrade}-trade`,
 					data: [
 						{
 							x: this.clickedTimestamp,

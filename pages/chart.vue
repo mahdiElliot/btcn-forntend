@@ -3,6 +3,7 @@
 		<CandleChart
 			:data="data"
 			:clickedTimestamp="clickedTimestamp"
+			:clickedTrade="tradeClicked"
 			:indicators="indicators"
 			:secondIndicators="secondChartIndicators"
 		/>
@@ -219,8 +220,9 @@ export default Vue.extend({
 				this.loading = false
 			}
 		},
-		itemClicked(timestamp: string) {
+		itemClicked(timestamp: string, type: string) {
 			this.clickedTimestamp = Number(timestamp)
+			this.tradeClicked = type
 			document.body.scrollTop = 0
 			document.documentElement.scrollTop = 0
 		},

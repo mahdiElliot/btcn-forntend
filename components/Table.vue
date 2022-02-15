@@ -38,7 +38,7 @@
 					class="cursor-pointer"
 					v-for="(t, i) in tData"
 					:key="i"
-					@click="$emit('clicked', t[0])"
+					@click="$emit('clicked', t[0], t[t.length - 1])"
 				>
 					<td v-for="(d, j) in t" :key="j">{{ d }}</td>
 				</tr>
