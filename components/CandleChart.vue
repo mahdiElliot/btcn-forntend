@@ -109,7 +109,7 @@ export default Vue.extend({
 		},
 		clickedTrade: {
 			type: String,
-			default: ''
+			default: '',
 		},
 		data: {
 			type: Object,
@@ -202,6 +202,18 @@ export default Vue.extend({
 						enabled: true,
 					},
 				},
+				plotOptions: {
+					series: {
+						dataLabels: {
+							shape: 'callout',
+							backgroundColor: 'rgba(0, 0, 0, 0.75)',
+							style: {
+								color: '#FFFFFF',
+								textOutline: 'none',
+							},
+						},
+					},
+				},
 				tooltip: {
 					shape: 'square',
 					headerShape: 'callout',
@@ -228,7 +240,9 @@ export default Vue.extend({
 							}
 						} else {
 							position = {
-								x: point.series ? point.series.chart.plotLeft : 0,
+								x: point.series
+									? point.series.chart.plotLeft
+									: 0,
 								y: 0 - chart.plotTop,
 							}
 						}
@@ -485,10 +499,9 @@ export default Vue.extend({
 				this.clickedTimestamp - r,
 				this.clickedTimestamp + r
 			)
-			
+
 			if (this.chart.get('flag')) this.chart.get('flag')?.remove()
-			
-			
+
 			this.chart.addSeries(
 				{
 					type: 'flags',
@@ -496,11 +509,23 @@ export default Vue.extend({
 					id: 'flag',
 					zIndex: 1,
 					color: 'black',
+					fillColor: 'black',
+					width: 36,
+					style: {
+						color: 'white',
+						fontSize: '16px'
+					},
+					states: {
+						hover: {
+							fillColor: 'black',
+						},
+					},
+					shape: 'callout' as any,
 					onSeries: `${this.clickedTrade}-trade`,
 					data: [
 						{
 							x: this.clickedTimestamp,
-							title: `price`
+							title: `price`,
 						},
 					],
 				},
