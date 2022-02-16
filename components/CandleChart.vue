@@ -507,7 +507,7 @@ export default Vue.extend({
 					zIndex: 1,
 					color: 'black',
 					fillColor: 'black',
-					width: 52,
+					// width: 52,
 					style: {
 						color: 'white',
 						fontSize: '16px',
