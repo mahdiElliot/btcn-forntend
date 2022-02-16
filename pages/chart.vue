@@ -207,8 +207,8 @@ export default Vue.extend({
 						s = candleData[candleData.length - 1].timestamp
 						e = candleData[0].timestamp
 					}
-					this.endDate = this.convertTimeToString(s)
-					this.startDate = this.convertTimeToString(e)
+					this.startDate = this.convertTimeToString(s)
+					this.endDate = this.convertTimeToString(e)
 				}
 
 				this.setTableData(r)
