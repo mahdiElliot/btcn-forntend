@@ -204,12 +204,9 @@ export default Vue.extend({
 				},
 				plotOptions: {
 					series: {
-						dataLabels: {
-							shape: 'callout',
-							backgroundColor: 'rgba(0, 0, 0, 0.75)',
-							style: {
-								color: '#FFFFFF',
-								textOutline: 'none',
+						states: {
+							inactive: {
+								enabled: false,
 							},
 						},
 					},
@@ -513,7 +510,7 @@ export default Vue.extend({
 					width: 36,
 					style: {
 						color: 'white',
-						fontSize: '16px'
+						fontSize: '16px',
 					},
 					states: {
 						hover: {
