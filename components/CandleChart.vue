@@ -522,7 +522,7 @@ export default Vue.extend({
 					data: [
 						{
 							x: this.clickedTimestamp,
-							title: `price`,
+							title: `price - ${this.clickedTrade}`,
 						},
 					],
 				},
