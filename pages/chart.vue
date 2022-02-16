@@ -83,7 +83,7 @@ export default Vue.extend({
 			fixedTableData: [] as any[],
 			tableHeads: ['timestamp', 'price', 'type'] as Array<string>,
 			indicators: [] as string[],
-			secondChartIndicators: [] as string[]
+			secondChartIndicators: [] as string[],
 		}
 	},
 	methods: {
@@ -192,7 +192,7 @@ export default Vue.extend({
 						timestamp: Number(it.timestamp),
 						price: it.open,
 						buy: it.buy,
-						...it
+						...it,
 					}))
 				this.data = {
 					candleData,
@@ -201,18 +201,27 @@ export default Vue.extend({
 
 				//set start and end date inputs
 				if (!startDate && !endDate && candleData.length) {
-					this.endDate = this.convertTimeToString(
-						candleData[0].timestamp
-					)
-					this.startDate = this.convertTimeToString(
-						candleData[candleData.length - 1].timestamp
-					)
+					let s = candleData[0].timestamp,
+						e = candleData[candleData.length - 1].timestamp
+					if (Number(s) >= Number(e)) {
+						s = candleData[candleData.length - 1].timestamp
+						e = candleData[0].timestamp
+					}
+					this.endDate = this.convertTimeToString(s)
+					this.startDate = this.convertTimeToString(e)
 				}
 
 				this.setTableData(r)
 
 				//set indicators for chart
-				this.indicators = ['lower', 'middle', 'upper', 'MA_21', 'MA_50', 'SMMA_21']
+				this.indicators = [
+					'lower',
+					'middle',
+					'upper',
+					'MA_21',
+					'MA_50',
+					'SMMA_21',
+				]
 				this.secondChartIndicators = ['k', 'j', 'd']
 			} catch (e: any) {
 				this.$toastErrors(this, e)
