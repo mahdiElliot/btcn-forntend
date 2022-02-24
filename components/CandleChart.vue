@@ -20,7 +20,7 @@
 				+
 			</button>
 			<button
-				class="p-1 px-2 text-sm rounded bg-option -my-1"
+				class="p-1 px-2 text-sm rounded bg-option -my-1 mb-1"
 				@click="zoomOut"
 				v-if="data.candleData"
 			>
