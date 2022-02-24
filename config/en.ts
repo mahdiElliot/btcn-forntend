@@ -5,5 +5,6 @@ export default {
     server_error: () => 'internal error',
     start_date: () => 'start date',
     end_date: () => 'end date',
+    empty_data: () => 'empty data',
     submit: () => 'submit'
 }

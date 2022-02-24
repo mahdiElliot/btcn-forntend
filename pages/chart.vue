@@ -179,7 +179,6 @@ export default Vue.extend({
 				const endDate =
 					this.endDate === '' ? 0 : Date.parse(this.endDate)
 
-		
 				//get data
 				const r = await this.$axios.get(
 					!startDate && !endDate
@@ -189,7 +188,8 @@ export default Vue.extend({
 
 				//set candle and trade chart data
 				const candleData = r.data.data
-
+				if (!candleData.length) throw new Error(this.$en.empty_data())
+				
 				const tradeData = (r.data.data as Array<any>)
 					.filter((it) => it.buy || it.sell)
 					.map((it) => ({
@@ -272,6 +272,9 @@ export default Vue.extend({
 			this.tableData = []
 			this.totalTableData = []
 			this.fixedTableData = []
+			this.indicators = []
+			this.secondChartIndicators = []
+			this.data = {}
 			// this.getCandleData()
 			this.getTradeData()
 		},
