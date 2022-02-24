@@ -170,10 +170,10 @@ export default Vue.extend({
 				navigation: {
 					bindingsClassName: 'tools-container',
 				},
-				time: {
-					useUTC: false,
-					timezone: 'IR',
-				},
+				// time: {
+				// 	useUTC: false,
+				// 	timezone: 'IR',
+				// },
 				xAxis: {
 					endOnTick: false,
 					startOnTick: false,
@@ -504,6 +504,7 @@ export default Vue.extend({
 					type: 'flags',
 					name: 'flag',
 					id: 'flag',
+					y: -100,
 					zIndex: 1,
 					color: 'black',
 					fillColor: 'black',

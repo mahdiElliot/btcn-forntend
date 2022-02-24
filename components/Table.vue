@@ -38,7 +38,7 @@
 					class="cursor-pointer"
 					v-for="(t, i) in tData"
 					:key="i"
-					@click="$emit('clicked', t[0], t[t.length - 1])"
+					@click="clickedData(i)"
 				>
 					<td v-for="(d, j) in t" :key="j">{{ d }}</td>
 				</tr>
@@ -75,6 +75,13 @@ export default Vue.extend({
 			console.log(this.sorted)
 			this.sorted = s
 			this.$emit('sort', s, this.asc)
+		},
+		clickedData(row: number) {
+			let index = this.heads.findIndex((it) => it === 'timestamp')
+			const timestamp = Date.parse(this.data[row][index])
+			index = this.heads.findIndex((it) => it === 'type')
+			const type = this.data[row][index]
+			this.$emit('clicked', timestamp, type)
 		},
 		resizableGrid(e: any) {
 			const t = e.getElementsByTagName('tr')[0],
@@ -154,8 +161,7 @@ export default Vue.extend({
 			this.tData = this.data.map((it) => {
 				const d = [] as any[]
 				it.map((it2, j) => {
-					if (this.allHeaders[j].selected)
-						d.push(it2)
+					if (this.allHeaders[j].selected) d.push(it2)
 				})
 				return d
 			})
@@ -183,7 +189,14 @@ export default Vue.extend({
 		} as PropOptions<Array<Array<any>>>,
 	},
 	mounted() {
-		if (this.data.length) this.enableResize()
+		if (this.data.length) {
+			this.allHeaders = this.heads.map((it) => ({
+				name: it as string,
+				selected: true,
+			}))
+			this.updateTable()
+			this.enableResize()
+		}
 	},
 	updated() {
 		this.enableResize()

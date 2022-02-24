@@ -256,7 +256,7 @@ export default Vue.extend({
 						delete temp['buy']
 						delete temp['sell']
 						const d = Object.values(temp)
-						d[0] = new Date(it.timestamp)
+						d[0] = new Date(it.timestamp).toUTCString()
 						d.push(it.buy ? 'buy' : 'sell')
 						return d
 					})
@@ -281,22 +281,22 @@ export default Vue.extend({
 		convertTimeToString(timestamp: number) {
 			const date = new Date(timestamp)
 			const month =
-				date.getMonth() + 1 >= 10
-					? `${date.getMonth() + 1}`
-					: `0${date.getMonth() + 1}`
+				date.getUTCMonth() + 1 >= 10
+					? `${date.getUTCMonth() + 1}`
+					: `0${date.getUTCMonth() + 1}`
 			const day =
-				date.getDate() >= 10
+				date.getUTCDate() >= 10
 					? `${date.getDate()}`
 					: `0${date.getDate()}`
 			const hour =
-				date.getHours() >= 10
-					? `${date.getHours()}`
-					: `0${date.getHours()}`
+				date.getUTCHours() >= 10
+					? `${date.getUTCHours()}`
+					: `0${date.getUTCHours()}`
 			const minute =
-				date.getMinutes() >= 10
-					? `${date.getMinutes()}`
-					: `0${date.getMinutes()}`
-			return `${date.getFullYear()}-${month}-${day}T${hour}:${minute}`
+				date.getUTCMinutes() >= 10
+					? `${date.getUTCMinutes()}`
+					: `0${date.getUTCMinutes()}`
+			return `${date.getUTCFullYear()}-${month}-${day}T${hour}:${minute}`
 		},
 	},
 	mounted() {
