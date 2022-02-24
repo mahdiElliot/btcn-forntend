@@ -6,6 +6,7 @@
 			:clickedTrade="tradeClicked"
 			:indicators="indicators"
 			:secondIndicators="secondChartIndicators"
+			:candleNumber="100"
 		/>
 		<div class="flex w-full my-4 justify-center items-center">
 			<div>

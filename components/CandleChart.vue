@@ -94,6 +94,20 @@ const getColor = () => {
 	return c
 }
 
+const convertToMinute = (d: string, n: number) => {
+	const dc: any = {
+		minute: n,
+		hour: n * 60,
+		day: n * 1440,
+		month: n * 43200,
+		year: n * 518400,
+	}
+	return dc[d]
+}
+
+//timestamp minute = 6000
+const MINUTE = 60000
+
 export default Vue.extend({
 	data() {
 		return {
@@ -123,6 +137,10 @@ export default Vue.extend({
 			type: Array,
 			default: () => [],
 		} as PropOptions<string[]>,
+		candleNumber: {
+			type: Number,
+			default: 100,
+		},
 	},
 	computed: {
 		allIndicators(): string[] {
@@ -174,10 +192,7 @@ export default Vue.extend({
 				// 	useUTC: false,
 				// 	timezone: 'IR',
 				// },
-				xAxis: {
-					endOnTick: false,
-					startOnTick: false,
-				},
+				xAxis: {},
 				yAxis: [
 					{
 						labels: {
@@ -200,6 +215,22 @@ export default Vue.extend({
 				stockTools: {
 					gui: {
 						enabled: true,
+						buttons: [
+							'indicators',
+							'separator',
+							'simpleShapes',
+							'lines',
+							'measure',
+							'advanced',
+							'verticalLabels',
+							'flags',
+							'separator',
+							'zoomChange',
+							'fullScreen',
+							'separator',
+							'currentPriceIndicator',
+							'saveChart',
+						],
 					},
 				},
 				plotOptions: {
@@ -389,7 +420,7 @@ export default Vue.extend({
 						},
 					],
 					allButtonsEnabled: true,
-					selected: 3,
+					selected: 1,
 				},
 				navigator: {
 					enabled: true,
@@ -446,6 +477,10 @@ export default Vue.extend({
 					},
 				] as any[],
 			})
+			this.chart.xAxis[0].setExtremes(
+				data[1][0],
+				data[Math.floor(data.length / 110) + 1][0]
+			)
 		},
 		disableZoom() {
 			if (this.chart.options.chart) {
@@ -491,10 +526,35 @@ export default Vue.extend({
 			this.init()
 		},
 		clickedTimestamp() {
-			const r = 10000000 * 6
+			let m = this.candleNumber
+
+			if (
+				this.chart.options.rangeSelector &&
+				this.chart.options.rangeSelector.buttons &&
+				this.chart.options.rangeSelector.selected
+			) {
+				const t =
+					this.chart.options.rangeSelector.buttons[
+						this.chart.options.rangeSelector.selected
+					]
+				const units =
+					t.dataGrouping && t.dataGrouping.units
+						? t.dataGrouping.units
+						: [['minute', [1]]]
+				
+				const n = units[0][1] ? units[0][1][0] : 1
+				const minute = convertToMinute(units[0][0] as string, n as number)
+				m = this.candleNumber * minute
+			}
+			// const r = 10000000 * 5
+			// this.chart.xAxis[0].setExtremes(
+			// 	this.clickedTimestamp - r,
+			// 	this.clickedTimestamp + r
+			// )
+
 			this.chart.xAxis[0].setExtremes(
-				this.clickedTimestamp - r,
-				this.clickedTimestamp + r
+				this.clickedTimestamp - Math.floor(m / 2) * MINUTE,
+				this.clickedTimestamp + Math.floor(m / 2) * MINUTE,
 			)
 
 			if (this.chart.get('flag')) this.chart.get('flag')?.remove()
