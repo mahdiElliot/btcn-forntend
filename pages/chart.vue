@@ -161,13 +161,15 @@ export default Vue.extend({
 			// 	'profit_percent',
 			// 	'type',
 			// ]
-			const x = this.totalTableData[0]
-			const ts = Object.keys(x).filter(
-				(it) => it !== 'buy' && it !== 'sell'
-			)
-			ts.push('type')
-			this.tableHeads = ts
-			this.sort('timestamp', true)
+			if (this.totalTableData.length) {
+				const x = this.totalTableData[0]
+				const ts = Object.keys(x).filter(
+					(it) => it !== 'buy' && it !== 'sell'
+				)
+				ts.push('type')
+				this.tableHeads = ts
+				this.sort('timestamp', true)
+			}
 		},
 		async getTradeData() {
 			this.loading = true
@@ -177,6 +179,7 @@ export default Vue.extend({
 				const endDate =
 					this.endDate === '' ? 0 : Date.parse(this.endDate)
 
+		
 				//get data
 				const r = await this.$axios.get(
 					!startDate && !endDate
@@ -201,16 +204,14 @@ export default Vue.extend({
 				}
 
 				//set start and end date inputs
-				if (!startDate && !endDate && candleData.length) {
-					let s = candleData[0].timestamp,
-						e = candleData[candleData.length - 1].timestamp
-					if (Number(s) >= Number(e)) {
-						s = candleData[candleData.length - 1].timestamp
-						e = candleData[0].timestamp
-					}
-					this.startDate = this.convertTimeToString(s)
-					this.endDate = this.convertTimeToString(e)
+				let s = candleData[0].timestamp,
+					e = candleData[candleData.length - 1].timestamp
+				if (Number(s) >= Number(e)) {
+					s = candleData[candleData.length - 1].timestamp
+					e = candleData[0].timestamp
 				}
+				this.startDate = this.convertTimeToString(s)
+				this.endDate = this.convertTimeToString(e)
 
 				this.setTableData(r)
 
@@ -268,6 +269,9 @@ export default Vue.extend({
 			]
 		},
 		submitDate() {
+			this.tableData = []
+			this.totalTableData = []
+			this.fixedTableData = []
 			// this.getCandleData()
 			this.getTradeData()
 		},
@@ -287,8 +291,8 @@ export default Vue.extend({
 					: `0${date.getUTCMonth() + 1}`
 			const day =
 				date.getUTCDate() >= 10
-					? `${date.getDate()}`
-					: `0${date.getDate()}`
+					? `${date.getUTCDate()}`
+					: `0${date.getUTCDate()}`
 			const hour =
 				date.getUTCHours() >= 10
 					? `${date.getUTCHours()}`
