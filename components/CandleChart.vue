@@ -121,7 +121,7 @@ const convertToMinute = (d: string, n: number) => {
 
 //timestamp minute = 6000
 const MINUTE = 60000
-const ZOOM = 3 * MINUTE
+const ZOOM = 15 * MINUTE
 
 export default Vue.extend({
 	data() {
@@ -512,7 +512,7 @@ export default Vue.extend({
 			)
 			this.chart.xAxis[0].setExtremes(
 				data[1][0],
-				data[Math.floor(data.length / 110) + 1][0]
+				data[Math.floor(data.length / this.candleNumber) + 1][0]
 			)
 		},
 		zoomOut() {
@@ -521,9 +521,11 @@ export default Vue.extend({
 			this.chart.xAxis[0].setExtremes(min - ZOOM, max + ZOOM)
 		},
 		zoomIn() {
-			const min = this.chart.xAxis[0].getExtremes().min,
-				max = this.chart.xAxis[0].getExtremes().max
-			this.chart.xAxis[0].setExtremes(min + ZOOM, max - ZOOM)
+			const points = this.chart.series[0].points
+			const slice = Math.floor(points.length * 0.15)
+			const min = points[slice].x,
+				max = points[points.length - 1 - slice].x
+			this.chart.xAxis[0].setExtremes(min, max)
 		},
 		disableZoom() {
 			if (this.chart.options.chart) {
