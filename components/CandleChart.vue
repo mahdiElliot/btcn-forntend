@@ -440,7 +440,7 @@ export default Vue.extend({
 							},
 						],
 						allButtonsEnabled: true,
-						selected: 1,
+						selected: 0,
 					},
 					navigator: {
 						enabled: true,
@@ -480,7 +480,7 @@ export default Vue.extend({
 							id: 'buy-trade',
 							data: buyData,
 							lineWidth: 0,
-							color: 'green',
+							color: 'lightgreen',
 							marker: {
 								enabled: true,
 								fillColor: 'green',
@@ -541,7 +541,7 @@ export default Vue.extend({
 			}
 			this.chosenIndicators.push(name)
 
-			const tdata = [...this.data.tradeData]
+			const tdata = [...this.data.candleData]
 			tdata.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
 			const data = tdata.map((it) => [Number(it.timestamp), it[name]])
 
