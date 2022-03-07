@@ -170,8 +170,8 @@ export default Vue.extend({
 	watch: {
 		heads() {
 			this.allHeaders = this.heads.map((it) => ({
-				name: it as string,
-				selected: true,
+				name: it,
+				selected: !this.allIndicators.includes(it),
 			}))
 		},
 		data() {
@@ -182,17 +182,30 @@ export default Vue.extend({
 		heads: {
 			type: Array,
 			default: () => [] as string[],
-		},
+		} as PropOptions<Array<string>>,
 		data: {
 			type: Array,
 			default: () => [] as any[][],
 		} as PropOptions<Array<Array<any>>>,
+		indicators: {
+			type: Array,
+			default: () => [] as string[]
+		} as PropOptions<Array<string>>,
+		secondIndicators: {
+			type: Array,
+			default: () => [] as string[]
+		} as PropOptions<Array<string>>,
+	},
+	computed: {
+		allIndicators(): string[]{
+			return [...this.indicators, ...this.secondIndicators]
+		}
 	},
 	mounted() {
 		if (this.data.length) {
 			this.allHeaders = this.heads.map((it) => ({
-				name: it as string,
-				selected: true,
+				name: it,
+				selected: !this.allIndicators.includes(it),
 			}))
 			this.updateTable()
 			this.enableResize()

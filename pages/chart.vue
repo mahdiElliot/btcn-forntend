@@ -42,6 +42,8 @@
 			@clicked="itemClicked"
 			@sort="sort"
 			:heads="tableHeads"
+			:indicators="indicators"
+			:secondIndicators="secondChartIndicators"
 		/>
 		<Pagination
 			class="mt-6"
@@ -189,7 +191,7 @@ export default Vue.extend({
 				//set candle and trade chart data
 				const candleData = r.data.data
 				if (!candleData.length) throw new Error(this.$en.empty_data())
-				
+
 				const tradeData = (r.data.data as Array<any>)
 					.filter((it) => it.buy || it.sell)
 					.map((it) => ({
@@ -213,8 +215,6 @@ export default Vue.extend({
 				this.startDate = this.convertTimeToString(s)
 				this.endDate = this.convertTimeToString(e)
 
-				this.setTableData(r)
-
 				//set indicators for chart
 				this.indicators = [
 					'lower',
@@ -225,6 +225,7 @@ export default Vue.extend({
 					'SMMA_21',
 				]
 				this.secondChartIndicators = ['k', 'j', 'd']
+				this.setTableData(r)
 			} catch (e: any) {
 				this.$toastErrors(this, e)
 			} finally {
