@@ -1,30 +1,19 @@
 <template>
 	<div class="block overflow-x-auto">
-		<div class="flex py-4 flex-wrap">
-			<span v-for="h in allHeaders" :key="h.name" class="ml-4">
-				<CheckBox
-					v-model="h.selected"
-					:label="h.name"
-					:id="h.name"
-					@changed="updateTable"
-					class="my-1"
-				/>
-			</span>
-		</div>
 		<table ref="table">
 			<thead>
 				<tr>
 					<th
-						v-for="s in allHeaders.filter((it) => it.selected)"
-						:key="s.name"
+						v-for="s in heads"
+						:key="s"
 						class="cursor-pointer relative"
 					>
-						<span @click="sort(s.name)" class="mr-5 w-full flex">{{
-							s.name
+						<span @click="sort(s)" class="mr-5 w-full flex">{{
+							s
 						}}</span>
 						<span
-							v-if="s.name === sorted"
-							@click="sort(s.name)"
+							v-if="s === sorted"
+							@click="sort(s)"
 							class="absolute right-0 top-0 bottom-0 mr-5 mt-2"
 						>
 							<span v-if="asc">&#x25be;</span>
@@ -36,7 +25,7 @@
 			<tbody>
 				<tr
 					class="cursor-pointer"
-					v-for="(t, i) in tData"
+					v-for="(t, i) in data"
 					:key="i"
 					@click="clickedData(i)"
 				>
@@ -51,37 +40,19 @@
 import Vue, { PropOptions } from 'vue'
 import CheckBox from '~/components/utils/CheckBox.vue'
 
-type header = {
-	name: string
-	selected: boolean
-}
-
 export default Vue.extend({
 	components: {
 		CheckBox,
 	},
 	data() {
-		return {
-			sorted: 'timestamp',
-			checked: true,
-			asc: true,
-			allHeaders: [] as header[],
-			tData: [] as any[][],
-		}
+		return {}
 	},
 	methods: {
 		sort(s: string) {
-			this.sorted === s ? (this.asc = !this.asc) : (this.asc = true)
-			console.log(this.sorted)
-			this.sorted = s
-			this.$emit('sort', s, this.asc)
+			this.$emit('sort', s)
 		},
 		clickedData(row: number) {
-			let index = this.heads.findIndex((it) => it === 'timestamp')
-			const timestamp = Date.parse(this.data[row][index])
-			index = this.heads.findIndex((it) => it === 'type')
-			const type = this.data[row][index]
-			this.$emit('clicked', timestamp, type)
+			this.$emit('clicked', row)
 		},
 		resizableGrid(e: any) {
 			const t = e.getElementsByTagName('tr')[0],
@@ -150,33 +121,6 @@ export default Vue.extend({
 		enableResize() {
 			this.resizableGrid(this.$refs.table)
 		},
-		updateTable() {
-			// const index = this.heads.findIndex((it) => it === id)
-			// if (value) {
-			// 	this.tData = this.tData.map((it) =>
-			// 		it.filter((_, i) => i !== index)
-			// 	)
-			// } else {
-			// }
-			this.tData = this.data.map((it) => {
-				const d = [] as any[]
-				it.map((it2, j) => {
-					if (this.allHeaders[j].selected) d.push(it2)
-				})
-				return d
-			})
-		},
-	},
-	watch: {
-		heads() {
-			this.allHeaders = this.heads.map((it) => ({
-				name: it,
-				selected: !this.allIndicators.includes(it),
-			}))
-		},
-		data() {
-			this.updateTable()
-		},
 	},
 	props: {
 		heads: {
@@ -187,27 +131,17 @@ export default Vue.extend({
 			type: Array,
 			default: () => [] as any[][],
 		} as PropOptions<Array<Array<any>>>,
-		indicators: {
-			type: Array,
-			default: () => [] as string[]
-		} as PropOptions<Array<string>>,
-		secondIndicators: {
-			type: Array,
-			default: () => [] as string[]
-		} as PropOptions<Array<string>>,
-	},
-	computed: {
-		allIndicators(): string[]{
-			return [...this.indicators, ...this.secondIndicators]
+		sorted: {
+			type: String,
+			default: ''
+		},
+		asc: {
+			type: Boolean,
+			default: true,
 		}
 	},
 	mounted() {
 		if (this.data.length) {
-			this.allHeaders = this.heads.map((it) => ({
-				name: it,
-				selected: !this.allIndicators.includes(it),
-			}))
-			this.updateTable()
 			this.enableResize()
 		}
 	},

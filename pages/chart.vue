@@ -36,40 +36,77 @@
 			</button>
 		</div>
 
-		<Table
-			class="mt-6 mx-2"
-			:data="tableData"
-			@clicked="itemClicked"
-			@sort="sort"
-			:heads="tableHeads"
-			:indicators="indicators"
-			:secondIndicators="secondChartIndicators"
-		/>
+		<div class="flex w-full items-center justify-center mt-12">
+			<button
+				@click="tablePage = 1"
+				class="px-12 py-2 outline-none"
+				:class="[
+					tablePage === 1 ? 'selected' : 'unselected ripple-bg-white',
+				]"
+			>
+				trades
+			</button>
+			<button
+				@click="tablePage = 2"
+				class="px-12 py-2 outline-none"
+				:class="[
+					tablePage === 2 ? 'selected' : 'unselected ripple-bg-white',
+				]"
+			>
+				info
+			</button>
+		</div>
+		<div class="mt-6 mx-2">
+			<MainTable
+				v-if="tablePage === 1"
+				:data="tableData"
+				@clicked="itemClicked"
+				@sort="sort"
+				:headers="tableHeads"
+				:indicators="indicators"
+				:secondIndicators="secondChartIndicators"
+			/>
+			<InfoTable
+				v-if="tablePage === 2"
+				:data="tableData"
+				@sort="sort"
+				:headers="tableHeads"
+			/>
+		</div>
 		<Pagination
 			class="mt-6"
 			:listSize="total"
 			:eachRowNumbers="rowsListNumber"
 			@paginate="paginate"
 		/>
+
 		<Loader v-if="loading" />
 	</div>
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import CandleChart from '~/components/CandleChart.vue'
-import Table from '~/components/Table.vue'
+import MainTable from '~/components/MainTable.vue'
+import InfoTable from '~/components/InfoTable.vue'
 import Pagination from '~/components/utils/Pagination.vue'
 import Loader from '~/components/utils/Loader.vue'
+
+type Data = {
+	candleData: Array<any>
+	tradeData: Array<any>
+}
+
 export default Vue.extend({
 	components: {
-		Table,
 		CandleChart,
 		Pagination,
 		Loader,
+		MainTable,
+		InfoTable,
 	},
 	data() {
 		return {
-			data: {} as any,
+			data: {} as Data,
 			total: 0,
 			rowsListNumber: 30,
 			rowsListNumber2: 35,
@@ -87,7 +124,13 @@ export default Vue.extend({
 			tableHeads: ['timestamp', 'price', 'type'] as Array<string>,
 			indicators: [] as string[],
 			secondChartIndicators: [] as string[],
+			tablePage: 1,
 		}
+	},
+	watch: {
+		tablePage() {
+			this.tableChanged()
+		},
 	},
 	methods: {
 		async getCandleData() {
@@ -135,9 +178,31 @@ export default Vue.extend({
 				this.loading = false
 			}
 		},
-		async setTableData(r: any) {
+		async getInfoData() {
+			this.loading = true
+			try {
+				const r = await this.$axios.get(this.$apiUrl.infoUrl())
+				this.total = r.data.total
+				this.fixedTableData = r.data.data
+				this.totalTableData = [...this.fixedTableData]
+
+				if (this.totalTableData.length) {
+					const x = this.totalTableData[0]
+					this.tableHeads = Object.keys(x)
+					console.log(this.tableHeads)
+
+					this.sort('Title', true)
+				}
+			} catch (e: any) {
+				this.$toastErrors(this, e)
+			} finally {
+				this.loading = false
+			}
+		},
+		async setMainTableData() {
+			this.loading = true
 			this.total = this.data.tradeData.length
-			this.fixedTableData = (r.data.data as Array<any>)
+			this.fixedTableData = this.data.candleData
 				.filter((it) => it.buy || it.sell)
 				.map((it) => ({
 					...it,
@@ -146,23 +211,7 @@ export default Vue.extend({
 				}))
 
 			this.totalTableData = [...this.fixedTableData]
-			// this.tableHeads = [
-			// 	'timestamp',
-			// 	'open',
-			// 	'high',
-			// 	'low',
-			// 	'close',
-			// 	'volume_btc',
-			// 	'volume_usdt',
-			// 	'slowk',
-			// 	'slowd',
-			// 	'k',
-			// 	'j',
-			// 	'd',
-			// 	'profit',
-			// 	'profit_percent',
-			// 	'type',
-			// ]
+
 			if (this.totalTableData.length) {
 				const x = this.totalTableData[0]
 				const ts = Object.keys(x).filter(
@@ -172,6 +221,7 @@ export default Vue.extend({
 				this.tableHeads = ts
 				this.sort('timestamp', true)
 			}
+			this.loading = false
 		},
 		async getTradeData() {
 			this.loading = true
@@ -184,8 +234,8 @@ export default Vue.extend({
 				//get data
 				const r = await this.$axios.get(
 					!startDate && !endDate
-						? this.$apiUrl.newTradeUrl()
-						: this.$apiUrl.newTradeUrl(startDate, endDate)
+						? this.$apiUrl.tradeUrl()
+						: this.$apiUrl.tradeUrl(startDate, endDate)
 				)
 
 				//set candle and trade chart data
@@ -225,7 +275,6 @@ export default Vue.extend({
 					'SMMA_21',
 				]
 				this.secondChartIndicators = ['k', 'j', 'd']
-				this.setTableData(r)
 			} catch (e: any) {
 				this.$toastErrors(this, e)
 			} finally {
@@ -240,47 +289,44 @@ export default Vue.extend({
 		},
 		paginate(page: number) {
 			this.page = page
-			// this.tableData = [
-			// 	...this.totalTableData
-			// 		.map((it: any) => [
-			// 			new Date(it.timestamp),
-			// 			it.price,
-			// 			it.buy ? 'buy' : 'sell',
-			// 		])
-			// 		.slice(
-			// 			this.rowsListNumber * (this.page - 1),
-			// 			this.page * this.rowsListNumber - 1
-			// 		),
-			// ]
-			this.tableData = [
-				...this.totalTableData
-					.map((it: any) => {
-						const temp = { ...it }
-						delete temp['buy']
-						delete temp['sell']
-						const d = Object.values(temp)
-						d[0] = new Date(it.timestamp).toUTCString()
-						d.push(it.buy ? 'buy' : 'sell')
-						return d
-					})
-					.slice(
-						this.rowsListNumber * (this.page - 1),
-						this.page * this.rowsListNumber - 1
-					),
-			]
+
+			if (this.tablePage === 1)
+				this.tableData = [
+					...this.totalTableData
+						.map((it: any) => {
+							const temp = { ...it }
+							delete temp['buy']
+							delete temp['sell']
+							const d = Object.values(temp)
+							d[0] = new Date(it.timestamp).toUTCString()
+							d.push(it.buy ? 'buy' : 'sell')
+							return d
+						})
+						.slice(
+							this.rowsListNumber * (this.page - 1),
+							this.page * this.rowsListNumber - 1
+						),
+				]
+			else if (this.tablePage === 2) {
+				this.tableData = [...this.totalTableData].slice(
+					this.rowsListNumber * (this.page - 1),
+					this.page * this.rowsListNumber - 1
+				)
+			}
 		},
 		submitDate() {
 			this.tableData = []
 			this.totalTableData = []
 			this.fixedTableData = []
-			this.indicators = []
-			this.secondChartIndicators = []
-			this.data = {}
+			// this.indicators = []
+			// this.secondChartIndicators = []
+			this.data = {} as Data
 			// this.getCandleData()
 			this.getTradeData()
 		},
 		sort(s: string, asc: boolean) {
-			if (s === 'type') s = 'buy'
+			if (this.tablePage === 1 && s === 'type') s = 'buy'
+
 			const ret = asc ? 1 : -1
 			this.totalTableData.sort((a: any, b: any) =>
 				a[s] >= b[s] ? ret : -ret
@@ -307,10 +353,16 @@ export default Vue.extend({
 					: `0${date.getUTCMinutes()}`
 			return `${date.getUTCFullYear()}-${month}-${day}T${hour}:${minute}`
 		},
+		tableChanged() {
+			if (this.tablePage === 1) this.setMainTableData()
+			else if (this.tablePage === 2) this.getInfoData()
+		},
 	},
 	mounted() {
 		// this.getCandleData()
-		this.getTradeData()
+		this.getTradeData().then(() => {
+			this.tableChanged()
+		})
 	},
 	head() {
 		return {
@@ -323,5 +375,16 @@ export default Vue.extend({
 <style lang="postcss" scoped>
 input {
 	@apply outline-none border border-border-2-light p-2;
+}
+
+.selected {
+	color: white;
+	box-shadow: 0px 4px 4px rgba(38, 50, 56, 0.15);
+	@apply bg-primary;
+}
+
+.unselected {
+	border: 1px solid #cfd8dc;
+	@apply text-text-primary-dark;
 }
 </style>

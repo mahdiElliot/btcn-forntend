@@ -173,6 +173,8 @@ export default Vue.extend({
 			Heikinashi(HighStock)
 			Hollowcandlestick(HighStock)
 
+			if (!this.data || !this.data.candleData) return
+
 			let data = [...this.data.candleData]
 			data.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
 			data = data.map((it) => [
@@ -205,14 +207,11 @@ export default Vue.extend({
 					navigation: {
 						bindingsClassName: 'tools-container',
 					},
-					mapNavigation: {
-						enableMouseWheelZoom: true,
-					},
 					// time: {
 					// 	useUTC: false,
 					// 	timezone: 'IR',
 					// },
-					xAxis: {},
+					
 					yAxis: [
 						{
 							labels: {
@@ -249,7 +248,6 @@ export default Vue.extend({
 								'fullScreen',
 								'separator',
 								'currentPriceIndicator',
-								'saveChart',
 							],
 						},
 					},
@@ -508,12 +506,14 @@ export default Vue.extend({
 							event.preventDefault && event.preventDefault()
 						}
 					)
+
+					
 				}
 			)
-			// this.chart.xAxis[0].setExtremes(
-			// 	data[1][0],
-			// 	data[Math.floor(data.length / this.candleNumber) + 1][0]
-			// )
+			this.chart.xAxis[0].setExtremes(
+				data[1][0],
+				data[1][0] + this.candleNumber * MINUTE
+			)
 		},
 		zoomOut() {
 			const min = this.chart.xAxis[0].getExtremes().min,
@@ -594,11 +594,6 @@ export default Vue.extend({
 				)
 				m = this.candleNumber * minute
 			}
-			// const r = 10000000 * 5
-			// this.chart.xAxis[0].setExtremes(
-			// 	this.clickedTimestamp - r,
-			// 	this.clickedTimestamp + r
-			// )
 
 			this.chart.xAxis[0].setExtremes(
 				this.clickedTimestamp - Math.floor(m / 2) * MINUTE,

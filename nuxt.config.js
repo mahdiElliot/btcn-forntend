@@ -4,7 +4,7 @@ env.BROWSER_BASE_URL = env.BROWSER_BASE_URL || '/api/'
 env.BASE_URL = env.BASE_URL || 'http://localhost:8081/api/'
 env.ENABLE_PROXY = env.ENABLE_PROXY || 0
 
-const dev = process.env.NODE_ENV !== 'production'
+const dev = env.NODE_ENV !== 'production'
 const enableProxy = env.ENABLE_PROXY
 const baseUrl = env.BASE_URL
 const browserBaseUrl = env.ENABLE_PROXY ? env.BROWSER_BASE_URL : env.BASE_URL
