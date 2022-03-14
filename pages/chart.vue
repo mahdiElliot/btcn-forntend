@@ -202,7 +202,7 @@ export default Vue.extend({
 		async setMainTableData() {
 			this.loading = true
 			this.total = this.data.tradeData.length
-			this.fixedTableData = this.data.candleData
+			this.fixedTableData = this.data.tradeData
 				.filter((it) => it.buy || it.sell)
 				.map((it) => ({
 					...it,
