@@ -273,6 +273,7 @@ export default Vue.extend({
 					'MA_21',
 					'MA_50',
 					'SMMA_21',
+					'zigzag'
 				]
 				this.secondChartIndicators = ['k', 'j', 'd']
 			} catch (e: any) {
