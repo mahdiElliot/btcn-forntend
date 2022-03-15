@@ -545,8 +545,8 @@ export default Vue.extend({
 			tdata.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
 			if (name.includes('zigzag')) {
 				data = tdata
-					.filter((it) => it[name])
-					.map((it) => [Number(it.timestamp), it[name] === 1 ? it.open : it.close])
+					.filter((it) => Number(it[name]) !== 0)
+					.map((it) => [Number(it.timestamp), Number(it[name]) === 1 ? it.open : it.close])
 			} else {
 				data = tdata.map((it) => [Number(it.timestamp), it[name]])
 			}
