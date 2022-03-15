@@ -541,19 +541,13 @@ export default Vue.extend({
 			this.chosenIndicators.push(name)
 
 			let data = []
+			const tdata = [...this.data.candleData]
+			tdata.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
 			if (name.includes('zigzag')) {
-				const tdata = [...this.data.tradeData]
-				tdata.sort((a, b) =>
-					a['timestamp'] >= b['timestamp'] ? 1 : -1
-				)
 				data = tdata
 					.filter((it) => it[name])
-					.map((it) => [Number(it.timestamp), it.price])
+					.map((it) => [Number(it.timestamp), it.open])
 			} else {
-				const tdata = [...this.data.candleData]
-				tdata.sort((a, b) =>
-					a['timestamp'] >= b['timestamp'] ? 1 : -1
-				)
 				data = tdata.map((it) => [Number(it.timestamp), it[name]])
 			}
 
