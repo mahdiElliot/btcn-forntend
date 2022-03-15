@@ -121,7 +121,6 @@ const convertToMinute = (d: string, n: number) => {
 
 //timestamp minute = 6000
 const MINUTE = 60000
-const ZOOM = 15 * MINUTE
 
 export default Vue.extend({
 	data() {
@@ -211,7 +210,7 @@ export default Vue.extend({
 					// 	useUTC: false,
 					// 	timezone: 'IR',
 					// },
-					
+
 					yAxis: [
 						{
 							labels: {
@@ -506,8 +505,6 @@ export default Vue.extend({
 							event.preventDefault && event.preventDefault()
 						}
 					)
-
-					
 				}
 			)
 			this.chart.xAxis[0].setExtremes(
@@ -518,6 +515,8 @@ export default Vue.extend({
 		zoomOut() {
 			const min = this.chart.xAxis[0].getExtremes().min,
 				max = this.chart.xAxis[0].getExtremes().max
+
+			const ZOOM = (max - min) / 5
 			this.chart.xAxis[0].setExtremes(min - ZOOM, max + ZOOM)
 		},
 		zoomIn() {
@@ -532,7 +531,7 @@ export default Vue.extend({
 				this.chart.options.chart.zoomType = '' as any
 			}
 		},
-		addIndicator(name: any) {
+		addIndicator(name: string) {
 			const index = this.chosenIndicators.findIndex((it) => it === name)
 			if (index !== -1) {
 				this.chosenIndicators.splice(index, 1)
@@ -541,9 +540,22 @@ export default Vue.extend({
 			}
 			this.chosenIndicators.push(name)
 
-			const tdata = [...this.data.candleData]
-			tdata.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
-			const data = tdata.map((it) => [Number(it.timestamp), it[name]])
+			let data = []
+			if (name.includes('zigzag')) {
+				const tdata = [...this.data.tradeData]
+				tdata.sort((a, b) =>
+					a['timestamp'] >= b['timestamp'] ? 1 : -1
+				)
+				data = tdata
+					.filter((it) => it[name])
+					.map((it) => [Number(it.timestamp), it.price])
+			} else {
+				const tdata = [...this.data.candleData]
+				tdata.sort((a, b) =>
+					a['timestamp'] >= b['timestamp'] ? 1 : -1
+				)
+				data = tdata.map((it) => [Number(it.timestamp), it[name]])
+			}
 
 			const color = getColor()
 			this.chart.addSeries(

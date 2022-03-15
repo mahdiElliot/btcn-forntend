@@ -6,6 +6,7 @@
 			:asc="asc"
 			:sorted="sorted"
 			@sort="sort"
+			@clicked="clickedData"
 		/>
 	</div>
 </template>
@@ -20,7 +21,7 @@ export default Vue.extend({
 	},
 	data() {
 		return {
-			sorted: 'Title',
+			sorted: 'Start Date',
 			asc: true,
 		}
 	},
@@ -40,6 +41,11 @@ export default Vue.extend({
 			this.sorted = s
 			this.$emit('sort', this.sorted, this.asc)
 		},
+		clickedData(row: number){
+			const index = this.headers.findIndex(it => it === 'key')
+
+			this.$emit('clicked', this.data[row][index])
+		}
 	},
 })
 </script>
