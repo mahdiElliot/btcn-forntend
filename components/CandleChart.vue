@@ -546,7 +546,7 @@ export default Vue.extend({
 			if (name.includes('zigzag')) {
 				data = tdata
 					.filter((it) => it[name])
-					.map((it) => [Number(it.timestamp), it.zigzag === 1 ? it.open : it.close])
+					.map((it) => [Number(it.timestamp), it[name] === 1 ? it.open : it.close])
 			} else {
 				data = tdata.map((it) => [Number(it.timestamp), it[name]])
 			}
