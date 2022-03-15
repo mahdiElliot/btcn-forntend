@@ -113,31 +113,3 @@ export default Vue.extend({
 	},
 })
 </script>
-
-<style scoped>
-table {
-	border-collapse: collapse;
-	width: 100%;
-	table-layout: fixed;
-}
-
-td,
-th {
-	border: 1px solid #dddddd;
-	text-align: left;
-	padding: 0.5rem;
-	overflow: hidden;
-	-moz-text-overflow: ellipsis;
-	-ms-text-overflow: ellipsis;
-	-o-text-overflow: ellipsis;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-tr:nth-child(even) {
-	background-color: #dddddd;
-}
-
-.w-400 {
-	width: 800px;
-}
-</style>

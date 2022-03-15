@@ -202,11 +202,10 @@ export default Vue.extend({
 					this.tradeKey = this.infoFixedTableData[0]['key']
 					this.tablePage = 2
 					this.getTradeData()
-				}
+				} else this.loading = false
 			} catch (e: any) {
-				this.$toastErrors(this, e)
-			} finally {
 				this.loading = false
+				this.$toastErrors(this, e)
 			}
 		},
 		setMainTableData() {
