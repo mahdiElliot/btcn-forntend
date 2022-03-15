@@ -1,6 +1,6 @@
 <template>
 	<div class="block overflow-x-auto">
-		<table ref="table">
+		<table ref="table" :class="[resizable ? 'layout-fixed': '']">
 			<thead>
 				<tr>
 					<th
@@ -119,6 +119,7 @@ export default Vue.extend({
 			}
 		},
 		enableResize() {
+			if (!this.resizable) return
 			this.resizableGrid(this.$refs.table)
 		},
 	},
@@ -133,12 +134,16 @@ export default Vue.extend({
 		} as PropOptions<Array<Array<any>>>,
 		sorted: {
 			type: String,
-			default: ''
+			default: '',
 		},
 		asc: {
 			type: Boolean,
 			default: true,
-		}
+		},
+		resizable: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	mounted() {
 		if (this.data.length) {
@@ -152,10 +157,13 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.layout-fixed {
+	table-layout: fixed;
+}
+
 table {
 	border-collapse: collapse;
 	width: 100%;
-	table-layout: fixed;
 }
 
 td,
@@ -170,8 +178,24 @@ th {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
-tr:nth-child(even) {
-	background-color: #dddddd;
+
+tbody tr {
+	transition: background 0.8s;
+}
+
+tbody tr:nth-child(even) {
+	background-color: #dddddd9d;
+}
+
+tbody tr:hover {
+	background: #cccccc radial-gradient(circle, transparent 1%, #cccccc 1%)
+		center/15000%;
+}
+
+tbody tr:active {
+	background-color: #dddddd9d;
+	background-size: 100%;
+	transition: background 0s;
 }
 
 .w-400 {

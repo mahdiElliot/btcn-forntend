@@ -18,6 +18,7 @@
 			:sorted="sorted"
 			@sort="sort"
 			@clicked="clickedData"
+			:resizable="false"
 		/>
 	</div>
 </template>

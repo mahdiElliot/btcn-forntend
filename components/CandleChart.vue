@@ -437,7 +437,7 @@ export default Vue.extend({
 							},
 						],
 						allButtonsEnabled: true,
-						selected: 0,
+						selected: 1,
 					},
 					navigator: {
 						enabled: true,
