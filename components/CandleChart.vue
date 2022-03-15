@@ -544,9 +544,13 @@ export default Vue.extend({
 			const tdata = [...this.data.candleData]
 			tdata.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
 			if (name.includes('zigzag')) {
+				console.log(tdata.filter((it) => Number(it[name]) !== 0))
 				data = tdata
 					.filter((it) => Number(it[name]) !== 0)
-					.map((it) => [Number(it.timestamp), Number(it[name]) === 1 ? it.open : it.close])
+					.map((it) => [
+						Number(it.timestamp),
+						Number(it[name]) === 1 ? it.high : it.low,
+					])
 			} else {
 				data = tdata.map((it) => [Number(it.timestamp), it[name]])
 			}
