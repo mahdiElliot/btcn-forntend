@@ -280,7 +280,7 @@ export default Vue.extend({
 					'SMMA_21',
 					'zigzag',
 				]
-				this.secondChartIndicators = ['k', 'j', 'd']
+				this.secondChartIndicators = ['k', 'j', 'd', 'macd']
 
 				this.setMainTableData()
 			} catch (e: any) {

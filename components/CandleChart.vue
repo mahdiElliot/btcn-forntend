@@ -510,7 +510,7 @@ export default Vue.extend({
 			this.chart.xAxis[0].setExtremes(
 				data[1][0],
 				data[1][0] + this.candleNumber * MINUTE
-			)
+			)			
 		},
 		zoomOut() {
 			const min = this.chart.xAxis[0].getExtremes().min,
