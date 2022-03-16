@@ -179,10 +179,6 @@ th {
 	text-overflow: ellipsis;
 }
 
-tbody tr {
-	transition: background 0.8s;
-}
-
 tbody tr:nth-child(even) {
 	background-color: #dddddd9d;
 }
@@ -195,7 +191,6 @@ tbody tr:hover {
 tbody tr:active {
 	background-color: #dddddd9d;
 	background-size: 100%;
-	transition: background 0s;
 }
 
 .w-400 {
