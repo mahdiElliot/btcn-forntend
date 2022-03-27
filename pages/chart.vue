@@ -136,6 +136,7 @@ export default Vue.extend({
 	watch: {
 		tablePage() {
 			this.page = 1
+			this.getInfoData()
 		},
 	},
 	methods: {
