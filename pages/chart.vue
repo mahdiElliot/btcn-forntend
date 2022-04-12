@@ -280,6 +280,9 @@ export default Vue.extend({
 					'MA_50',
 					'SMMA_21',
 					'zigzag',
+					'HMA',
+					'EHMA',
+					'THMA'
 				]
 				this.secondChartIndicators = ['k', 'j', 'd', 'macd']
 
