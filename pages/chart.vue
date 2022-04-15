@@ -136,7 +136,7 @@ export default Vue.extend({
 	watch: {
 		tablePage() {
 			this.page = 1
-			this.getInfoData()
+			if (this.tablePage === 1) this.getInfoData()
 		},
 	},
 	methods: {
@@ -282,7 +282,7 @@ export default Vue.extend({
 					'zigzag',
 					'HMA',
 					'EHMA',
-					'THMA'
+					'THMA',
 				]
 				this.secondChartIndicators = ['k', 'j', 'd', 'macd']
 
