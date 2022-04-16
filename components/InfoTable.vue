@@ -36,7 +36,7 @@ type header = {
 export default Vue.extend({
 	components: {
 		Table,
-		CheckBox
+		CheckBox,
 	},
 	data() {
 		return {
@@ -58,7 +58,7 @@ export default Vue.extend({
 	},
 	watch: {
 		data() {
-			this.updateHeader()
+			if (!this.allHeaders.length) this.updateHeader()
 			this.updateTable()
 		},
 	},

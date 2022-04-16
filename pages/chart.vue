@@ -72,6 +72,7 @@
 				:headers="tableHeads"
 				:indicators="indicators"
 				:secondIndicators="secondChartIndicators"
+				:initialHeaders="initialMainHeaders"
 			/>
 		</div>
 		<Pagination
@@ -124,6 +125,18 @@ export default Vue.extend({
 			totalTableData: [] as any[],
 			fixedTableData: [] as any[],
 			tableHeads: ['timestamp', 'price', 'type'] as Array<string>,
+			initialMainHeaders: [
+				'timestamp',
+				'open',
+				'high',
+				'low',
+				'close',
+				'price',
+				'profit',
+				'profit_percent',
+				'cum_profit',
+				'type',
+			],
 			infoTableHeads: [] as any[],
 			infoTableData: [] as any[],
 			infoTotalTableData: [] as any[],
@@ -250,12 +263,16 @@ export default Vue.extend({
 
 				const tradeData = (r.data.data as Array<any>)
 					.filter((it) => it.buy || it.sell)
-					.map((it) => ({
-						timestamp: Number(it.timestamp),
-						price: it.open,
-						buy: it.buy,
-						...it,
-					}))
+					.map((it) => {
+						const t = {
+							timestamp: Number(it.timestamp),
+							price: it.sell_price,
+							buy: it.buy,
+							...it,
+						}
+						delete t['sell_price']
+						return t
+					})
 				this.data = {
 					candleData,
 					tradeData,

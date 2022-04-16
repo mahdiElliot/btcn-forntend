@@ -72,10 +72,12 @@ export default Vue.extend({
 	},
 	watch: {
 		data() {
-			this.allHeaders = this.headers.map((it) => ({
-				name: it,
-				selected: !this.allIndicators.includes(it),
-			}))
+			if (!this.allHeaders.length)
+				this.allHeaders = this.headers.map((it) => ({
+					name: it,
+					// selected: !this.allIndicators.includes(it),
+					selected: this.initialHeaders.includes(it)
+				}))
 			this.updateTable()
 		},
 	},
@@ -96,6 +98,10 @@ export default Vue.extend({
 			type: Array,
 			default: () => [] as string[],
 		} as PropOptions<Array<string>>,
+		initialHeaders: {
+			type: Array,
+			default: () => [] as string[],
+		} as PropOptions<Array<string>>,
 	},
 	computed: {
 		allIndicators(): string[] {
@@ -106,7 +112,8 @@ export default Vue.extend({
 		if (this.data.length) {
 			this.allHeaders = this.headers.map((it) => ({
 				name: it,
-				selected: !this.allIndicators.includes(it),
+				// selected: !this.allIndicators.includes(it),
+				selected: this.initialHeaders.includes(it)
 			}))
 			this.updateTable()
 		}
