@@ -317,6 +317,10 @@ export default Vue.extend({
 			document.documentElement.scrollTop = 0
 		},
 		clickedInfo(key: number) {
+			this.tableData = []
+			this.totalTableData = []
+			this.fixedTableData = []
+			this.tableHeads = []
 			this.tradeKey = key
 			this.tablePage = 2
 			this.startDate = ''
