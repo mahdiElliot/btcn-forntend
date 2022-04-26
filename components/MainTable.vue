@@ -63,7 +63,6 @@ export default Vue.extend({
 		updateTable() {
 			this.tData = this.data.map((it) => {
 				const d = [] as any[]
-				// console.log(it, it.length)
 				it.map((it2, j) => {
 					if (this.allHeaders[j].selected) d.push(it2)
 				})

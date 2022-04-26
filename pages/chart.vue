@@ -266,7 +266,7 @@ export default Vue.extend({
 					.map((it) => {
 						const t = {
 							timestamp: Number(it.timestamp),
-							price: it.sell_price,
+							price: it.buy ? it.open : it.sell_price,
 							buy: it.buy,
 							...it,
 						}
@@ -300,6 +300,7 @@ export default Vue.extend({
 					'HMA',
 					'EHMA',
 					'THMA',
+					'cci'
 				]
 				this.secondChartIndicators = ['k', 'j', 'd', 'macd']
 
