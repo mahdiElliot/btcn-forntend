@@ -302,7 +302,7 @@ export default Vue.extend({
 					'THMA',
 					'cci'
 				]
-				this.secondChartIndicators = ['k', 'j', 'd', 'macd']
+				this.secondChartIndicators = ['k', 'j', 'd', 'macd', 'macdsignal']
 
 				this.setMainTableData()
 			} catch (e: any) {
