@@ -564,7 +564,7 @@ export default Vue.extend({
 					color,
 					data,
 					marker: {
-						enabled: true,
+						enabled: false,
 						fillColor: color,
 						color: color,
 						symbol: 'circle',
