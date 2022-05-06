@@ -187,7 +187,7 @@ export default Vue.extend({
 			const tdata = [...this.data.tradeData]
 			tdata.sort((a, b) => (a['timestamp'] >= b['timestamp'] ? 1 : -1))
 			const sellData = tdata
-				.filter((it) => !it.buy)
+				.filter((it) => !it.buy || it.stoploss_signal === 1)
 				.map((it) => [Number(it.timestamp), it.price])
 
 			const buyData = tdata
