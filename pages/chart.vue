@@ -47,7 +47,7 @@
 				info
 			</button>
 			<button
-				@click="tablePage = 2"
+				@click="tradesClicked"
 				class="px-12 py-2 outline-none"
 				:class="[
 					tablePage === 2 ? 'selected' : 'unselected ripple-bg-white',
@@ -210,7 +210,7 @@ export default Vue.extend({
 					const x = this.infoTotalTableData[0]
 					this.infoTableHeads = Object.keys(x)
 
-					this.sort('Start Date', true)
+					this.sort('Time of Back Test', true)
 				}
 				if (!this.tradeKey) {
 					this.tradeKey = this.infoFixedTableData[0]['key']
@@ -327,6 +327,10 @@ export default Vue.extend({
 			this.startDate = ''
 			this.endDate = ''
 			this.getTradeData()
+		},
+		tradesClicked(){
+			this.tablePage = 2
+			this.total = this.data.tradeData.length
 		},
 		paginate(page: number) {
 			this.page = page

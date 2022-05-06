@@ -40,7 +40,7 @@ export default Vue.extend({
 	},
 	data() {
 		return {
-			sorted: 'Start Date',
+			sorted: 'Time of Back Test',
 			asc: true,
 			allHeaders: [] as header[],
 			tData: [] as any[][],
