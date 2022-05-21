@@ -119,7 +119,7 @@ const convertToMinute = (d: string, n: number) => {
 	return dc[d]
 }
 
-//timestamp minute = 6000
+//timestamp minute = 60000
 const MINUTE = 60000
 
 export default Vue.extend({
@@ -155,6 +155,10 @@ export default Vue.extend({
 			type: Number,
 			default: 100,
 		},
+		tradeCount: {
+			type: Number,
+			default: 1
+		}
 	},
 	computed: {
 		allIndicators(): string[] {
@@ -510,7 +514,7 @@ export default Vue.extend({
 			this.chart.xAxis[0].setExtremes(
 				data[1][0],
 				data[1][0] + this.candleNumber * MINUTE
-			)			
+			)
 		},
 		zoomOut() {
 			const min = this.chart.xAxis[0].getExtremes().min,
@@ -578,6 +582,43 @@ export default Vue.extend({
 	watch: {
 		data() {
 			this.init()
+			this.chosenIndicators.forEach((name) => {
+				let data = []
+				const tdata = [...this.data.candleData]
+				tdata.sort((a, b) =>
+					a['timestamp'] >= b['timestamp'] ? 1 : -1
+				)
+				if (name.includes('zigzag')) {
+					data = tdata
+						.filter((it) => Number(it[name]) !== 0)
+						.map((it) => [
+							Number(it.timestamp),
+							Number(it[name]) === 1 ? it.high : it.low,
+						])
+				} else {
+					data = tdata.map((it) => [Number(it.timestamp), it[name]])
+				}
+
+				const color = getColor()
+				this.chart.addSeries(
+					{
+						type: 'line',
+						name,
+						id: name,
+						zIndex: 1,
+						color,
+						data,
+						marker: {
+							enabled: false,
+							fillColor: color,
+							color: color,
+							symbol: 'circle',
+						},
+						yAxis: this.secondIndicators.includes(name) ? 1 : 0,
+					},
+					true
+				)
+			})
 		},
 		clickedTimestamp() {
 			let m = this.candleNumber
@@ -635,7 +676,7 @@ export default Vue.extend({
 					data: [
 						{
 							x: this.clickedTimestamp,
-							title: `price - ${this.clickedTrade}`,
+							title: `price - ${this.clickedTrade} - ${this.tradeCount}`,
 						},
 					],
 				},

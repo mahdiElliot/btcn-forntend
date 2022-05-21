@@ -7,8 +7,9 @@
 			:indicators="indicators"
 			:secondIndicators="secondChartIndicators"
 			:candleNumber="100"
+			:tradeCount="tradeCount"
 		/>
-		<div class="flex w-full my-4 justify-center items-center">
+		<!-- <div class="flex w-full my-4 justify-center items-center">
 			<div>
 				<label for="startdate">{{ $en.start_date() }}:</label>
 				<input
@@ -34,7 +35,7 @@
 			>
 				{{ $en.submit() }}
 			</button>
-		</div>
+		</div> -->
 
 		<div class="flex w-full items-center justify-center mt-12">
 			<button
@@ -110,11 +111,16 @@ export default Vue.extend({
 		return {
 			data: {} as Data,
 			total: 0,
-			rowsListNumber: 30,
+			tradesTotal: 0,
+			rowsListNumber: 60,
 			rowsListNumber2: 35,
 			page: 1,
+			clckTimestamp: 1,
 			clickedTimestamp: 1,
+			tradeCount: 1,
 			tradeClicked: 'buy',
+			tradesSort: 'timestamp',
+			tradesSortAsc: 1,
 			loading: true,
 			// startDate: '2022-01-07T09:00',
 			// endDate: '2022-01-09T06:15',
@@ -212,21 +218,48 @@ export default Vue.extend({
 
 					this.sort('Time of Back Test', true)
 				}
-				if (!this.tradeKey) {
-					this.tradeKey = this.infoFixedTableData[0]['key']
-					this.tablePage = 2
-					this.getTradeData()
-				} else this.loading = false
+				// if (!this.tradeKey) {
+				// 	this.tradeKey = this.infoFixedTableData[0]['key']
+				// 	this.tablePage = 2
+				// 	this.getTradeData()
+				// } else
+				this.loading = false
 			} catch (e: any) {
 				this.loading = false
 				this.$toastErrors(this, e)
 			}
 		},
-		setMainTableData() {
-			this.total = this.data.tradeData.length
-			this.fixedTableData = [...this.data.tradeData]
+		async setMainTableData() {
+			const r = await this.$axios.get(
+				this.$apiUrl.tradeUrl(
+					this.tradeKey,
+					0,
+					0,
+					this.rowsListNumber,
+					this.page,
+					this.tradesSort,
+					this.tradesSortAsc,
+					1
+				)
+			)
 
-			this.totalTableData = [...this.fixedTableData]
+			if (!r.data.data.length) throw new Error(this.$en.empty_data())
+
+			const tradeData = (r.data.data as Array<any>).map((it) => {
+				const t = {
+					timestamp: Number(it.timestamp),
+					price: it.buy ? it.open : it.sell_price,
+					buy: it.buy,
+					...it,
+				}
+				delete t['sell_price']
+				return t
+			})
+			this.total = r.data.total
+			this.tradesTotal = r.data.total
+			this.fixedTableData = [...tradeData]
+
+			this.totalTableData = [...tradeData]
 
 			if (this.totalTableData.length) {
 				const x = this.totalTableData[0]
@@ -235,7 +268,18 @@ export default Vue.extend({
 				)
 				ts.push('type')
 				this.tableHeads = ts
-				this.sort('timestamp', true)
+				// this.sort('timestamp', true)
+				this.tableData = [
+					...this.totalTableData.map((it: any) => {
+						const temp = { ...it }
+						delete temp['buy']
+						delete temp['sell']
+						const d = Object.values(temp)
+						d[0] = new Date(it.timestamp).toUTCString()
+						d.push(it.buy ? 'buy' : 'sell')
+						return d
+					}),
+				]
 			}
 		},
 		async getTradeData() {
@@ -247,46 +291,29 @@ export default Vue.extend({
 					this.endDate === '' ? 0 : Date.parse(this.endDate)
 
 				//get data
-				const r = await this.$axios.get(
-					!startDate && !endDate
-						? this.$apiUrl.tradeUrl(this.tradeKey)
-						: this.$apiUrl.tradeUrl(
-								this.tradeKey,
-								startDate,
-								endDate
-						  )
-				)
+				// const r = await this.$axios.get(
+				// 	this.$apiUrl.tradeUrl(
+				// 		this.tradeKey,
+				// 		0,
+				// 		0,
+				// 		this.rowsListNumber,
+				// 		this.page
+				// 	)
+				// )
 
-				//set candle and trade chart data
-				const candleData = r.data.data
-				if (!candleData.length) throw new Error(this.$en.empty_data())
-
-				const tradeData = (r.data.data as Array<any>)
-					.filter((it) => it.buy || it.sell)
-					.map((it) => {
-						const t = {
-							timestamp: Number(it.timestamp),
-							price: it.buy ? it.open : it.sell_price,
-							buy: it.buy,
-							...it,
-						}
-						delete t['sell_price']
-						return t
-					})
-				this.data = {
-					candleData,
-					tradeData,
-				}
+				// this.allData = r.data.data
+				// if (!this.allData.length) throw new Error(this.$en.empty_data())
+				await this.setMainTableData()
 
 				//set start and end date inputs
-				let s = candleData[0].timestamp,
-					e = candleData[candleData.length - 1].timestamp
-				if (Number(s) >= Number(e)) {
-					s = candleData[candleData.length - 1].timestamp
-					e = candleData[0].timestamp
-				}
-				this.startDate = this.convertTimeToString(s)
-				this.endDate = this.convertTimeToString(e)
+				// let s = candleData[0].timestamp,
+				// 	e = candleData[candleData.length - 1].timestamp
+				// if (Number(s) >= Number(e)) {
+				// 	s = candleData[candleData.length - 1].timestamp
+				// 	e = candleData[0].timestamp
+				// }
+				// this.startDate = this.convertTimeToString(s)
+				// this.endDate = this.convertTimeToString(e)
 
 				//set indicators for chart
 				this.indicators = [
@@ -300,22 +327,81 @@ export default Vue.extend({
 					'HMA',
 					'EHMA',
 					'THMA',
-					'cci'
+					'cci',
 				]
-				this.secondChartIndicators = ['k', 'j', 'd', 'macd', 'macdsignal']
-
-				this.setMainTableData()
+				this.secondChartIndicators = [
+					'k',
+					'j',
+					'd',
+					'macd',
+					'macdsignal',
+				]
+				await this.setChartData()
 			} catch (e: any) {
 				this.$toastErrors(this, e)
 			} finally {
 				this.loading = false
 			}
 		},
-		itemClicked(timestamp: string, type: string) {
-			this.clickedTimestamp = Number(timestamp)
-			this.tradeClicked = type
-			document.body.scrollTop = 0
-			document.documentElement.scrollTop = 0
+		async setChartData() {
+			const MINUTE = 60000
+			let startDate = 0,
+				endDate = 0
+			const DAYS = 2880 * MINUTE
+			if (this.clckTimestamp > 1)
+				(startDate = this.clckTimestamp - DAYS),
+					(endDate = this.clckTimestamp + DAYS)
+
+			//set candle and trade chart data
+			const r = await this.$axios.get(
+				this.$apiUrl.tradeUrl(
+					this.tradeKey,
+					startDate,
+					endDate,
+					1000,
+					1,
+					this.tradesSort,
+					this.tradesSortAsc,
+					0
+				)
+			)
+			const candleData: any[] = r.data.data
+
+			const tradeData = candleData
+				.filter((it) => it.buy || it.sell)
+				.map((it) => {
+					const t = {
+						timestamp: Number(it.timestamp),
+						price: it.buy ? it.open : it.sell_price,
+						buy: it.buy,
+						...it,
+					}
+					delete t['sell_price']
+					return t
+				})
+
+			this.data = {
+				candleData,
+				tradeData,
+			}
+		},
+		itemClicked(timestamp: string, type: string, tradeCount: number) {
+			this.clckTimestamp = Number(timestamp)
+			this.loading = true
+			this.setChartData()
+				.then(() => {
+					this.clickedTimestamp = Number(timestamp)
+					this.tradeClicked = type
+					this.tradeCount = tradeCount
+					document.body.scrollTop = 0
+					document.documentElement.scrollTop = 0
+				})
+				.catch((e) => {
+					this.$toastErrors(this, e)
+				})
+				.finally(() => {
+					this.loading = false
+				})
 		},
 		clickedInfo(key: number) {
 			this.tableData = []
@@ -328,40 +414,47 @@ export default Vue.extend({
 			this.endDate = ''
 			this.getTradeData()
 		},
-		tradesClicked(){
+		tradesClicked() {
 			this.tablePage = 2
-			this.total = this.data.tradeData.length
+			this.total = this.tradesTotal
 		},
-		paginate(page: number) {
+		async paginate(page: number) {
 			this.page = page
-
-			if (this.tablePage === 2)
-				this.tableData = [
-					...this.totalTableData
-						.map((it: any) => {
-							const temp = { ...it }
-							delete temp['buy']
-							delete temp['sell']
-							const d = Object.values(temp)
-							d[0] = new Date(it.timestamp).toUTCString()
-							d.push(it.buy ? 'buy' : 'sell')
+			this.loading = true
+			try {
+				if (this.tablePage === 2)
+					// this.tableData = [
+					// 	...this.totalTableData
+					// 		.map((it: any) => {
+					// 			const temp = { ...it }
+					// 			delete temp['buy']
+					// 			delete temp['sell']
+					// 			const d = Object.values(temp)
+					// 			d[0] = new Date(it.timestamp).toUTCString()
+					// 			d.push(it.buy ? 'buy' : 'sell')
+					// 			return d
+					// 		})
+					// 		.slice(
+					// 			this.rowsListNumber * (this.page - 1),
+					// 			this.page * this.rowsListNumber - 1
+					// 		),
+					// ]
+					await this.setMainTableData()
+				else if (this.tablePage === 1) {
+					this.infoTableData = [
+						...this.infoTotalTableData.map((it) => {
+							const d = Object.values(it)
 							return d
-						})
-						.slice(
-							this.rowsListNumber * (this.page - 1),
-							this.page * this.rowsListNumber - 1
-						),
-				]
-			else if (this.tablePage === 1) {
-				this.infoTableData = [
-					...this.infoTotalTableData.map((it) => {
-						const d = Object.values(it)
-						return d
-					}),
-				].slice(
-					this.rowsListNumber * (this.page - 1),
-					this.page * this.rowsListNumber - 1
-				)
+						}),
+					].slice(
+						this.rowsListNumber * (this.page - 1),
+						this.page * this.rowsListNumber - 1
+					)
+				}
+			} catch (e: any) {
+				this.$toastErrors(this, e)
+			} finally {
+				this.loading = false
 			}
 		},
 		submitDate() {
@@ -374,21 +467,34 @@ export default Vue.extend({
 			// this.getCandleData()
 			this.getTradeData()
 		},
-		sort(s: string, asc: boolean) {
-			if (this.tablePage === 1) {
-				const ret = asc ? 1 : -1
-				this.infoTotalTableData.sort((a: any, b: any) =>
-					a[s] >= b[s] ? ret : -ret
-				)
-			} else if (this.tablePage === 2) {
-				if (s === 'type') s = 'buy'
+		async sort(s: string, asc: boolean) {
+			this.loading = true
+			try {
+				if (this.tablePage === 1) {
+					const ret = asc ? 1 : -1
+					this.infoTotalTableData.sort((a: any, b: any) =>
+						a[s] >= b[s] ? ret : -ret
+					)
+					this.paginate(this.page)
+				} else if (this.tablePage === 2) {
+					// if (s === 'type') s = 'buy'
 
-				const ret = asc ? 1 : -1
-				this.totalTableData.sort((a: any, b: any) =>
-					a[s] >= b[s] ? ret : -ret
-				)
+					// const ret = asc ? 1 : -1
+					// this.totalTableData.sort((a: any, b: any) =>
+					// 	a[s] >= b[s] ? ret : -ret
+					// )
+					if (s !== 'type') {
+						this.tradesSort = s
+						this.tradesSortAsc = asc ? 1 : -1
+						await this.setMainTableData()
+					}
+				}
+			} catch (e: any) {
+				this.$toastErrors(this, e)
+			} finally {
+				this.loading = false
 			}
-			this.paginate(this.page)
+			// this.paginate(this.page)
 		},
 		convertTimeToString(timestamp: number) {
 			const date = new Date(timestamp)
