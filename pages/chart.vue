@@ -146,7 +146,6 @@ export default Vue.extend({
 			infoTableHeads: [] as any[],
 			infoTableData: [] as any[],
 			infoTotalTableData: [] as any[],
-			infoFixedTableData: [] as any[],
 			indicators: [] as string[],
 			secondChartIndicators: [] as string[],
 			tablePage: 1,
@@ -209,8 +208,7 @@ export default Vue.extend({
 			try {
 				const r = await this.$axios.get(this.$apiUrl.infoUrl())
 				this.total = r.data.total
-				this.infoFixedTableData = r.data.data
-				this.infoTotalTableData = [...this.infoFixedTableData]
+				this.infoTotalTableData = r.data.data
 
 				if (this.infoTotalTableData.length) {
 					const x = this.infoTotalTableData[0]
@@ -218,11 +216,6 @@ export default Vue.extend({
 
 					this.sort('Time of Back Test', true)
 				}
-				// if (!this.tradeKey) {
-				// 	this.tradeKey = this.infoFixedTableData[0]['key']
-				// 	this.tablePage = 2
-				// 	this.getTradeData()
-				// } else
 				this.loading = false
 			} catch (e: any) {
 				this.loading = false
@@ -285,57 +278,13 @@ export default Vue.extend({
 		async getTradeData() {
 			this.loading = true
 			try {
-				const startDate =
-					this.startDate === '' ? 0 : Date.parse(this.startDate)
-				const endDate =
-					this.endDate === '' ? 0 : Date.parse(this.endDate)
-
 				//get data
-				// const r = await this.$axios.get(
-				// 	this.$apiUrl.tradeUrl(
-				// 		this.tradeKey,
-				// 		0,
-				// 		0,
-				// 		this.rowsListNumber,
-				// 		this.page
-				// 	)
-				// )
-
-				// this.allData = r.data.data
-				// if (!this.allData.length) throw new Error(this.$en.empty_data())
 				await this.setMainTableData()
 
-				//set start and end date inputs
-				// let s = candleData[0].timestamp,
-				// 	e = candleData[candleData.length - 1].timestamp
-				// if (Number(s) >= Number(e)) {
-				// 	s = candleData[candleData.length - 1].timestamp
-				// 	e = candleData[0].timestamp
-				// }
-				// this.startDate = this.convertTimeToString(s)
-				// this.endDate = this.convertTimeToString(e)
-
 				//set indicators for chart
-				this.indicators = [
-					'lower',
-					'middle',
-					'upper',
-					'MA_21',
-					'MA_50',
-					'SMMA_21',
-					'zigzag',
-					'HMA',
-					'EHMA',
-					'THMA',
-					'cci',
-				]
-				this.secondChartIndicators = [
-					'k',
-					'j',
-					'd',
-					'macd',
-					'macdsignal',
-				]
+				const r = await this.$axios.get(this.$apiUrl.indicatorUrl())
+				this.indicators = (r.data as Array<any>).filter(it => it.type).map(it => it.name)
+				this.secondChartIndicators = (r.data as Array<any>).filter(it => !it.type).map(it => it.name)
 				await this.setChartData()
 			} catch (e: any) {
 				this.$toastErrors(this, e)
@@ -423,22 +372,6 @@ export default Vue.extend({
 			this.loading = true
 			try {
 				if (this.tablePage === 2)
-					// this.tableData = [
-					// 	...this.totalTableData
-					// 		.map((it: any) => {
-					// 			const temp = { ...it }
-					// 			delete temp['buy']
-					// 			delete temp['sell']
-					// 			const d = Object.values(temp)
-					// 			d[0] = new Date(it.timestamp).toUTCString()
-					// 			d.push(it.buy ? 'buy' : 'sell')
-					// 			return d
-					// 		})
-					// 		.slice(
-					// 			this.rowsListNumber * (this.page - 1),
-					// 			this.page * this.rowsListNumber - 1
-					// 		),
-					// ]
 					await this.setMainTableData()
 				else if (this.tablePage === 1) {
 					this.infoTableData = [
@@ -477,12 +410,6 @@ export default Vue.extend({
 					)
 					this.paginate(this.page)
 				} else if (this.tablePage === 2) {
-					// if (s === 'type') s = 'buy'
-
-					// const ret = asc ? 1 : -1
-					// this.totalTableData.sort((a: any, b: any) =>
-					// 	a[s] >= b[s] ? ret : -ret
-					// )
 					if (s !== 'type') {
 						this.tradesSort = s
 						this.tradesSortAsc = asc ? 1 : -1
