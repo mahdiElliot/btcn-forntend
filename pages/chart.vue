@@ -1,6 +1,7 @@
 <template>
 	<div class="w-full h-full p-6 py-12">
 		<CandleChart
+			v-if="data.candleData && data.candleData.length > 0"
 			:data="data"
 			:clickedTimestamp="clickedTimestamp"
 			:clickedTrade="tradeClicked"
@@ -336,11 +337,15 @@ export default Vue.extend({
 		itemClicked(timestamp: string, type: string, trade_order: number) {
 			this.clckTimestamp = Number(timestamp)
 			this.loading = true
+			this.data = {
+				candleData: [],
+				tradeData: []
+			}
 			this.setChartData()
 				.then(() => {
-					this.clickedTimestamp = Number(timestamp)
 					this.tradeClicked = type
 					this.tradeOrder = trade_order
+					this.clickedTimestamp = Number(timestamp)
 					document.body.scrollTop = 0
 					document.documentElement.scrollTop = 0
 				})

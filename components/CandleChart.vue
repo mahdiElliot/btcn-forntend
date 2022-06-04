@@ -28,7 +28,7 @@
 			</button>
 		</div>
 		<div id="stock-container" style="height: 800px; width: 100%"></div>
-		<div v-if="data.candleData" class="ml-2">
+		<div v-if="data.candleData && data.candleData.length > 0" class="ml-2">
 			<div
 				class="ml-2 mb-1 z-2"
 				@click="indicatorsVisible = !indicatorsVisible"
@@ -670,7 +670,6 @@ export default Vue.extend({
 					zIndex: 1,
 					color: 'black',
 					fillColor: 'black',
-					// width: 52,
 					style: {
 						color: 'white',
 						fontSize: '16px',
@@ -701,7 +700,6 @@ export default Vue.extend({
 						zIndex: 1,
 						color: 'black',
 						fillColor: 'black',
-						// width: 52,
 						style: {
 							color: 'white',
 							fontSize: '16px',
