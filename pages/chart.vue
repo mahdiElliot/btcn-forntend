@@ -5,6 +5,8 @@
 			:data="data"
 			:clickedTimestamp="clickedTimestamp"
 			:clickedTrade="tradeClicked"
+			:clickedTimestamp2="clickedTimestamp2"
+			:clickedTrade2="tradeClicked2"
 			:indicators="indicators"
 			:secondIndicators="secondChartIndicators"
 			:candleNumber="100"
@@ -118,8 +120,10 @@ export default Vue.extend({
 			page: 1,
 			clckTimestamp: 1,
 			clickedTimestamp: 1,
+			clickedTimestamp2: 1,
 			tradeOrder: 1,
 			tradeClicked: 'buy',
+			tradeClicked2: 'sell',
 			tradesSort: 'timestamp',
 			tradesSortAsc: 1,
 			loading: true,
@@ -283,8 +287,12 @@ export default Vue.extend({
 
 				//set indicators for chart
 				const r = await this.$axios.get(this.$apiUrl.indicatorUrl())
-				this.indicators = (r.data as Array<any>).filter(it => it.type).map(it => it.name)
-				this.secondChartIndicators = (r.data as Array<any>).filter(it => !it.type).map(it => it.name)
+				this.indicators = (r.data as Array<any>)
+					.filter((it) => it.type)
+					.map((it) => it.name)
+				this.secondChartIndicators = (r.data as Array<any>)
+					.filter((it) => !it.type)
+					.map((it) => it.name)
 				await this.setChartData()
 			} catch (e: any) {
 				this.$toastErrors(this, e)
@@ -296,10 +304,13 @@ export default Vue.extend({
 			const MINUTE = 60000
 			let startDate = 0,
 				endDate = 0
-			const DAYS = 2880 * MINUTE
+			const DAYS = 1440 * MINUTE
 			if (this.clckTimestamp > 1)
-				(startDate = this.clckTimestamp - DAYS),
-					(endDate = this.clckTimestamp + DAYS)
+				(startDate = this.clckTimestamp - DAYS / 4),
+					(endDate =
+						(this.clickedTimestamp2 > 1
+							? this.clickedTimestamp2
+							: this.clckTimestamp) + DAYS)
 
 			//set candle and trade chart data
 			const r = await this.$axios.get(
@@ -307,7 +318,7 @@ export default Vue.extend({
 					this.tradeKey,
 					startDate,
 					endDate,
-					1000,
+					2500,
 					1,
 					this.tradesSort,
 					this.tradesSortAsc,
@@ -336,23 +347,45 @@ export default Vue.extend({
 		},
 		itemClicked(timestamp: string, type: string, trade_order: number) {
 			this.clckTimestamp = Number(timestamp)
+			// this.data = {
+			// 	candleData:[],
+			// 	tradeData: [],
+			// }
 			this.loading = true
-			this.data = {
-				candleData: [],
-				tradeData: []
-			}
-			this.setChartData()
-				.then(() => {
-					this.tradeClicked = type
-					this.tradeOrder = trade_order
-					this.clickedTimestamp = Number(timestamp)
-					document.body.scrollTop = 0
-					document.documentElement.scrollTop = 0
+			;(
+				this.$axios.get(
+					this.$apiUrl.findTradeUrl(this.tradeKey, trade_order)
+				) as Promise<any>
+			)
+				.then((response: any) => {
+					const trade2 = type.includes('buy')
+						? response.data.data.find((it: any) => !it.buy)
+						: response.data.data.find((it: any) => it.buy)
+					
+					if (trade2)
+						this.clickedTimestamp2 = Number(trade2.timestamp)
+					
+					
+					this.setChartData()
+						.then(() => {
+							this.tradeClicked = type
+							this.tradeClicked2 = type.includes('buy')
+								? 'sell'
+								: 'buy'
+							this.tradeOrder = trade_order
+							this.clickedTimestamp = Number(timestamp)
+							document.body.scrollTop = 0
+							document.documentElement.scrollTop = 0
+						})
+						.catch((e) => {
+							this.$toastErrors(this, e)
+						})
+						.finally(() => {
+							this.loading = false
+						})
 				})
-				.catch((e) => {
+				.catch((e: any) => {
 					this.$toastErrors(this, e)
-				})
-				.finally(() => {
 					this.loading = false
 				})
 		},
@@ -375,8 +408,7 @@ export default Vue.extend({
 			this.page = page
 			this.loading = true
 			try {
-				if (this.tablePage === 2)
-					await this.setMainTableData()
+				if (this.tablePage === 2) await this.setMainTableData()
 				else if (this.tablePage === 1) {
 					this.infoTableData = [
 						...this.infoTotalTableData.map((it) => {

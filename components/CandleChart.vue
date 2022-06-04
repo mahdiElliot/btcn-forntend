@@ -139,6 +139,14 @@ export default Vue.extend({
 			type: String,
 			default: '',
 		},
+		clickedTimestamp2: {
+			type: Number,
+			default: 1,
+		},
+		clickedTrade2: {
+			type: String,
+			default: '',
+		},
 		data: {
 			type: Object,
 			default: () => ({} as Data),
@@ -653,14 +661,6 @@ export default Vue.extend({
 			if (this.chart.get('flag')) this.chart.get('flag')?.remove()
 			if (this.chart.get('flag2')) this.chart.get('flag2')?.remove()
 
-			const trade2 = this.clickedTrade.includes('buy')
-				? this.data.tradeData.find(
-						(it) => it.trade_order === this.tradeOrder && !it.buy
-				  )
-				: this.data.tradeData.find(
-						(it) => it.trade_order === this.tradeOrder && it.buy
-				  )
-
 			this.chart.addSeries(
 				{
 					type: 'flags',
@@ -690,7 +690,8 @@ export default Vue.extend({
 				},
 				true
 			)
-			if (trade2)
+
+			if (this.clickedTimestamp2 > 1)
 				this.chart.addSeries(
 					{
 						type: 'flags',
@@ -710,13 +711,11 @@ export default Vue.extend({
 							},
 						},
 						shape: 'callout' as any,
-						onSeries: `${trade2.buy ? 'buy' : 'sell'}-trade`,
+						onSeries: `${this.clickedTrade2}-trade`,
 						data: [
 							{
-								x: trade2.timestamp,
-								title: `price - ${
-									trade2.buy ? 'buy' : 'sell'
-								} - ${trade2.trade_order}`,
+								x: this.clickedTimestamp2,
+								title: `price - ${this.clickedTrade2} - ${this.tradeOrder}`,
 							},
 						],
 					},
