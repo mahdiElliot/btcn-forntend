@@ -57,9 +57,9 @@ export default Vue.extend({
 			const timestamp = Date.parse(this.data[row][index])
 			index = this.headers.findIndex((it) => it === 'type')
 			const type = this.data[row][index]
-			index = this.headers.findIndex(it => it === 'tradecount')
-			const tradeCount = this.data[row][index]
-			this.$emit('clicked', timestamp, type, tradeCount)
+			index = this.headers.findIndex(it => it === 'trade_order')
+			const trade_order = this.data[row][index]
+			this.$emit('clicked', timestamp, type, trade_order)
 		},
 
 		updateTable() {

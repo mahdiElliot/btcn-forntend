@@ -155,7 +155,7 @@ export default Vue.extend({
 			type: Number,
 			default: 100,
 		},
-		tradeCount: {
+		tradeOrder: {
 			type: Number,
 			default: 1
 		}
@@ -651,6 +651,9 @@ export default Vue.extend({
 			)
 
 			if (this.chart.get('flag')) this.chart.get('flag')?.remove()
+			if (this.chart.get('flag2')) this.chart.get('flag')?.remove()
+
+
 
 			this.chart.addSeries(
 				{
@@ -676,7 +679,7 @@ export default Vue.extend({
 					data: [
 						{
 							x: this.clickedTimestamp,
-							title: `price - ${this.clickedTrade} - ${this.tradeCount}`,
+							title: `price - ${this.clickedTrade} - ${this.tradeOrder}`,
 						},
 					],
 				},

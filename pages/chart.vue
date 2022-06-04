@@ -7,7 +7,7 @@
 			:indicators="indicators"
 			:secondIndicators="secondChartIndicators"
 			:candleNumber="100"
-			:tradeCount="tradeCount"
+			:tradeOrder="tradeOrder"
 		/>
 		<!-- <div class="flex w-full my-4 justify-center items-center">
 			<div>
@@ -117,7 +117,7 @@ export default Vue.extend({
 			page: 1,
 			clckTimestamp: 1,
 			clickedTimestamp: 1,
-			tradeCount: 1,
+			tradeOrder: 1,
 			tradeClicked: 'buy',
 			tradesSort: 'timestamp',
 			tradesSortAsc: 1,
@@ -334,14 +334,14 @@ export default Vue.extend({
 				tradeData,
 			}
 		},
-		itemClicked(timestamp: string, type: string, tradeCount: number) {
+		itemClicked(timestamp: string, type: string, trade_order: number) {
 			this.clckTimestamp = Number(timestamp)
 			this.loading = true
 			this.setChartData()
 				.then(() => {
 					this.clickedTimestamp = Number(timestamp)
 					this.tradeClicked = type
-					this.tradeCount = tradeCount
+					this.tradeOrder = trade_order
 					document.body.scrollTop = 0
 					document.documentElement.scrollTop = 0
 				})
