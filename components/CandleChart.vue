@@ -157,8 +157,8 @@ export default Vue.extend({
 		},
 		tradeOrder: {
 			type: Number,
-			default: 1
-		}
+			default: 1,
+		},
 	},
 	computed: {
 		allIndicators(): string[] {
@@ -651,9 +651,15 @@ export default Vue.extend({
 			)
 
 			if (this.chart.get('flag')) this.chart.get('flag')?.remove()
-			if (this.chart.get('flag2')) this.chart.get('flag')?.remove()
+			if (this.chart.get('flag2')) this.chart.get('flag2')?.remove()
 
-
+			const trade2 = this.clickedTrade.includes('buy')
+				? this.data.tradeData.find(
+						(it) => it.trade_order === this.tradeOrder && !it.buy
+				  )
+				: this.data.tradeData.find(
+						(it) => it.trade_order === this.tradeOrder && it.buy
+				  )
 
 			this.chart.addSeries(
 				{
@@ -685,6 +691,39 @@ export default Vue.extend({
 				},
 				true
 			)
+			if (trade2)
+				this.chart.addSeries(
+					{
+						type: 'flags',
+						name: 'flag2',
+						id: 'flag2',
+						y: -100,
+						zIndex: 1,
+						color: 'black',
+						fillColor: 'black',
+						// width: 52,
+						style: {
+							color: 'white',
+							fontSize: '16px',
+						},
+						states: {
+							hover: {
+								fillColor: 'black',
+							},
+						},
+						shape: 'callout' as any,
+						onSeries: `${trade2.buy ? 'buy' : 'sell'}-trade`,
+						data: [
+							{
+								x: trade2.timestamp,
+								title: `price - ${
+									trade2.buy ? 'buy' : 'sell'
+								} - ${trade2.trade_order}`,
+							},
+						],
+					},
+					true
+				)
 		},
 	},
 	mounted() {

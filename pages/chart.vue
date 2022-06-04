@@ -250,7 +250,6 @@ export default Vue.extend({
 			})
 			this.total = r.data.total
 			this.tradesTotal = r.data.total
-			this.fixedTableData = [...tradeData]
 
 			this.totalTableData = [...tradeData]
 
